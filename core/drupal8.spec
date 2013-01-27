@@ -4,6 +4,10 @@
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
 
+# Need to figure out how to get auto-provides:
+# " = %%version"?
+#find . -type f -name '*\.info' -printf 'Provides: drupal8(%f)\n' | sed 's/\.info//'
+
 Name:      drupal8
 Version:   8.0
 Release:   0.1.%{git_release}%{?dist}
@@ -24,7 +28,24 @@ Source5:   %{name}.conf
 BuildArch: noarch
 # Core:    php >= 5.3.0
 # Vendors: php >= 5.4.0 (bundled libraries)
-Requires:  php >= 5.4.0
+Requires:  php >= 5.3.0
+Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
+Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
+Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
+Requires:  php-pear(pear.symfony.com/HttpFoundation) < 2.4
+Requires:  php-pear(pear.symfony.com/HttpKernel) < 2.4
+Requires:  php-pear(pear.symfony.com/Routing) < 2.4
+Requires:  php-pear(pear.symfony.com/Serializer) < 2.4
+Requires:  php-pear(pear.symfony.com/Validator) < 2.4
+Requires:  php-pear(pear.symfony.com/Yaml) < 2.4
+Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
+Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
+Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
+Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
+# TODO: guzzle/http (bz885344 in progress -- https://bugzilla.redhat.com/show_bug.cgi?id=885344)
+# TODO: kriswallsmith/assetic
+# TODO: symfony-cmf/routing
+# TODO: easyrdf/easyrdf
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -32,7 +53,7 @@ Requires:  php-ctype
 Requires:  php-curl
 Requires:  php-date
 Requires:  php-dom
-Requires:  php-filter
+# Requires:  php-filter <<<<< NO RHEL
 Requires:  php-ftp
 Requires:  php-gd
 Requires:  php-gmp
@@ -48,7 +69,7 @@ Requires:  php-reflection
 Requires:  php-session
 Requires:  php-simplexml
 Requires:  php-spl
-Requires:  php-ssh2
+#Requires:  php-ssh2
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
@@ -71,6 +92,35 @@ diverse community of people around the world.
 
 # Remove unnecessary files
 rm -f .gitattributes .editorconfig web.config
+
+# Symlink vendors (bundled libraries)
+# TODO: Not all removed because some are not available as separate packages yet
+#
+# It would be nice to be able to just symlink the entire vendor directory to a
+# global Composer vendor directory kind of like the nodejs/npm packages do for
+# node_modules... :) :) :)
+#
+# doctrine/common
+# Lazy-symlinking here (symlink to base Dcotrine path instead individual component)
+# core/vendor/doctrine/common/lib/Doctrine -> ../../../../../../pear/Doctrine (/usr/share/pear/Doctrine)
+rm -rf core/vendor/doctrine
+mkdir -p -m 755 core/vendor/doctrine/common/lib
+ln -s ../../../../../../pear/Doctrine core/vendor/doctrine/common/lib/Doctrine
+#
+# symfony/*
+# Lazy-symlinking here (symlink to base Symfony path instead individual components)
+# core/vendor/symfony/*/Symfony -> ../../../../../pear/Symfony (/usr/share/pear/Symfony)
+for SYMFONY_COMPONENT in core/vendor/symfony/*; do
+    rm -rf $SYMFONY_COMPONENT/*
+    ln -s ../../../../../pear/Symfony $SYMFONY_COMPONENT/Symfony
+done
+#
+# twig/twig
+# Lazy-symlinking here (symlink to base Dcotrine path instead individual component)
+# core/vendor/twig/twig/lib/Doctrine -> ../../../../../../pear/Twig (/usr/share/pear/Twig)
+rm -rf core/vendor/twig
+mkdir -p -m 755 core/vendor/twig/twig/lib
+ln -s ../../../../../../pear/Twig core/vendor/twig/twig/lib/Twig
 
 # Update macros' version and release
 cp %{SOURCE1} .
