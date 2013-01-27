@@ -81,10 +81,16 @@ Requires:  php-sockets
 Requires:  php-sqlite3
 Requires:  php-tokenizer
 
+Provides:  drupal8(core) = %version
+
 %description
 Drupal is an open source content management platform powering millions of
 websites and applications. It’s built, used, and supported by an active and
 diverse community of people around the world.
+
+WARNING: This is just a development RPM.  Please submit issues at
+         https://github.com/siwinski/drupal8-rpms/issues and prefix
+         your issue title with "[%name] ".
 
 
 %prep
