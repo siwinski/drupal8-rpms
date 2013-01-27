@@ -34,10 +34,8 @@ def main():
     paths = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
-        if not path.endswith('.info'):
-            continue
-
-        print 'drupal8(' + os.path.basename(path)[:-len('.info')] + ')'
+        if path.endswith('.info'):
+            print 'drupal8(' + os.path.basename(path)[:-len('.info')] + ')'
 
 
 if __name__ == '__main__':
