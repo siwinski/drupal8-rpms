@@ -1,12 +1,8 @@
-%global git_commit 117a617bd81545f68e4eab1e69f0a7f4eb66dd24
-%global git_date   20130125
+%global git_commit dcfdede780353484803fd84ab9142149b3e9ea4a
+%global git_date   20130128
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
-
-# Need to figure out how to get auto-provides:
-# " = %%version"?
-#find . -type f -name '*\.info' -printf 'Provides: drupal8(%f)\n' | sed 's/\.info//'
 
 Name:      drupal8
 Version:   8.0
@@ -82,6 +78,10 @@ Requires:  php-sqlite3
 Requires:  php-tokenizer
 
 Provides:  drupal8(core) = %version
+# Auto-provides
+# 1) List *.info files from source tarball
+# 2) Get file basename
+# 3) Create "Provides: "
 %(tar --list --file %SOURCE0 --wildcards '*.info' | \
   awk '{"basename "$1" .info" | getline provide; \
         print "Provides: drupal8("provide")"}')
@@ -96,12 +96,12 @@ WARNING: This is just a development RPM.  Please submit issues at
          your issue title with "[%name] ".
 
 
-%package rpmdev
-Summary:  RPM development setup for %{name}
-Group:    Development/Libraries
+%package rpmbuild
+Summary:  Rpmbuild files for %{name}
+Group:    Development/Tools
 #Requires: %{name} = %{version}-%{release}
 
-%description rpmdev
+%description rpmbuild
 %{summary}.
 
 
@@ -119,11 +119,9 @@ rm -f .gitattributes .editorconfig web.config
 # node_modules... :) :) :)
 #
 # doctrine/common
-# Lazy-symlinking here (symlink to base Dcotrine path instead individual component)
-# core/vendor/doctrine/common/lib/Doctrine -> ../../../../../../pear/Doctrine (/usr/share/pear/Doctrine)
 rm -rf core/vendor/doctrine
-mkdir -p -m 755 core/vendor/doctrine/common/lib
-ln -s ../../../../../../pear/Doctrine core/vendor/doctrine/common/lib/Doctrine
+mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
+ln -s ../../../../../../pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
 #
 # symfony/*
 # Lazy-symlinking here (symlink to base Symfony path instead individual components)
@@ -134,8 +132,6 @@ for SYMFONY_COMPONENT in core/vendor/symfony/*; do
 done
 #
 # twig/twig
-# Lazy-symlinking here (symlink to base Dcotrine path instead individual component)
-# core/vendor/twig/twig/lib/Doctrine -> ../../../../../../pear/Twig (/usr/share/pear/Twig)
 rm -rf core/vendor/twig
 mkdir -p -m 755 core/vendor/twig/twig/lib
 ln -s ../../../../../../pear/Twig core/vendor/twig/twig/lib/Twig
@@ -172,7 +168,7 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 # Apache HTTPD conf
 %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
-%files rpmdev
+%files rpmbuild
 %{_sysconfdir}/rpm/macros.%{name}
 %{_rpmconfigdir}/fileattrs/%{name}.attr
 %{_rpmconfigdir}/%{name}.prov
@@ -180,5 +176,5 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 
 
 %changelog
-* Sun Jan 27 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130125git117a617
+* Mon Jan 28 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130128gitdcfdede
 - Initial package
