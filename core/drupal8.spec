@@ -42,10 +42,10 @@ Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
 Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
-# TODO: guzzle/http (bz885344 in progress -- https://bugzilla.redhat.com/show_bug.cgi?id=885344)
+# TODO: guzzle/http (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=885344)
 # TODO: kriswallsmith/assetic
 # TODO: symfony-cmf/routing
-# TODO: easyrdf/easyrdf
+# TODO: easyrdf/easyrdf (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=904862)
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -91,6 +91,15 @@ diverse community of people around the world.
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
          your issue title with "[%name] ".
+
+
+%package rpmdev
+Summary:  RPM development setup for %{name}
+Group:    Development/Libraries
+#Requires: %{name} = %{version}-%{release}
+
+%description rpmdev
+%{summary}.
 
 
 %prep
@@ -157,13 +166,14 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 %files
 %doc README.txt
 %{_datadir}/%{name}
-# RPM "magic"
+# Apache HTTPD conf
+%{_sysconfdir}/httpd/conf.d/%{name}.conf
+
+%files rpmdev
 %{_sysconfdir}/rpm/macros.%{name}
 %{_rpmconfigdir}/fileattrs/%{name}.attr
 %{_rpmconfigdir}/%{name}.prov
 %{_rpmconfigdir}/%{name}.req
-# Apache HTTPD conf
-%{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 
 %changelog
