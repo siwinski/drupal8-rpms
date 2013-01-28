@@ -82,6 +82,9 @@ Requires:  php-sqlite3
 Requires:  php-tokenizer
 
 Provides:  drupal8(core) = %version
+%(tar --list --file %SOURCE0 --wildcards '*.info' | \
+  awk '{"basename "$1" .info" | getline provide; \
+        print "Provides: drupal8("provide")"}')
 
 %description
 Drupal is an open source content management platform powering millions of
