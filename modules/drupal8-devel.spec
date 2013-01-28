@@ -12,8 +12,7 @@ URL:           http://drupal.org/project/%{module_name}
 Source0:       http://ftp.drupal.org/files/projects/%{module_name}-8.x-1.x-dev.tar.gz
 
 BuildArch:     noarch
-# For auto-provides and auto-requires
-BuildRequires: drupal8-rpmdev
+BuildRequires: drupal8-rpmbuild
 
 # phpci
 Requires:      php-date
