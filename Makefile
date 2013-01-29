@@ -18,8 +18,8 @@ setup:
 
 # TARGET: core      Make core RPMs
 .PHONY: core
+core: CORE_SOURCE=$(shell spectool --list-files core/drupal8.spec | grep '^Source0:' | sed 's/Source0:\s*//' | xargs basename)
 core: setup
-	@CORE_SOURCE=$(shell spectool --list-files core/drupal8.spec | grep '^Source0:' | sed 's/Source0:\s*//' | xargs basename)
 	@[ -e rpmbuild/SOURCES/$(CORE_SOURCE) ] || spectool $(SPECTOOL_OPTIONS) core/drupal8.spec
 	@[ -e core/$(CORE_SOURCE) ] || ln -s ../rpmbuild/SOURCES/$(CORE_SOURCE) core/$(CORE_SOURCE)
 	rpmbuild $(RPMBUILD_OPTIONS) --define '_sourcedir $(PWD)/core' -ba core/drupal8.spec
