@@ -1,8 +1,10 @@
-%global git_commit dcfdede780353484803fd84ab9142149b3e9ea4a
-%global git_date   20130128
+%global git_commit c4c71f4c77861bd8c96604481f7c87ad9be828e9
+%global git_date   20130129
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
+
+%global drupal8 %{_datadir}/drupal8
 
 Name:      drupal8
 Version:   8.0
@@ -108,8 +110,8 @@ Group:    Development/Tools
 %prep
 %setup -q -n drupal-%{git_commit_short}
 
-# Remove unnecessary files
-rm -f .gitattributes .editorconfig web.config
+# Remove unneeded IIS file
+rm -f web.config
 
 # Symlink vendors (bundled libraries)
 # TODO: Not all removed because some are not available as separate packages yet
@@ -148,9 +150,10 @@ sed -e 's/__DRUPAL8_VERSION__/%version/' \
 
 
 %install
-mkdir -p -m 755 %{buildroot}%{_datadir}/%{name}
-cp -pr * %{buildroot}%{_datadir}/%{name}/
-rm -f %{buildroot}%{_datadir}/%{name}/macros.%{name}
+mkdir -p -m 755 %{buildroot}%{drupal8}
+cp -pr * %{buildroot}%{drupal8}/
+cp -p  .htaccess %{buildroot}%{drupal8}/
+rm -f %{buildroot}%{drupal8}/macros.%{name}
 
 # RPM "magic"
 install -Dp -m 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/macros.%{name}
@@ -163,8 +166,11 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 
 
 %files
-%doc README.txt
-%{_datadir}/%{name}
+%doc README.txt core/*.txt core/composer.*
+%{drupal8}
+%exclude %{drupal8}/README.txt
+%exclude %{drupal8}/core/*.txt
+%exclude %{drupal8}/core/composer.*
 # Apache HTTPD conf
 %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
@@ -176,5 +182,5 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 
 
 %changelog
-* Mon Jan 28 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130128gitdcfdede
+* Tue Jan 29 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130129gitc4c71f4
 - Initial package
