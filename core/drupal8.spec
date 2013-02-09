@@ -1,5 +1,5 @@
-%global git_commit c4c71f4c77861bd8c96604481f7c87ad9be828e9
-%global git_date   20130129
+%global git_commit 4bbff1649e13b75a0b1fefe770d1130a483d2076
+%global git_date   20130209
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -40,10 +40,10 @@ Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
 Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
-# TODO: guzzle/http (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=885344)
+Requires:  php-pear(guzzlephp.org/pear/Guzzle)
+Requires:  php-EasyRdf
 # TODO: kriswallsmith/assetic
 # TODO: symfony-cmf/routing
-# TODO: easyrdf/easyrdf (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=904862)
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -51,7 +51,6 @@ Requires:  php-ctype
 Requires:  php-curl
 Requires:  php-date
 Requires:  php-dom
-# Requires:  php-filter <<<<< NO RHEL
 Requires:  php-ftp
 Requires:  php-gd
 Requires:  php-gmp
@@ -67,10 +66,10 @@ Requires:  php-reflection
 Requires:  php-session
 Requires:  php-simplexml
 Requires:  php-spl
-#Requires:  php-ssh2
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
+%{?fedora:Requires: php-filter}
 # phpci: Vendors (bundled libraries)
 Requires:  php-fileinfo
 Requires:  php-openssl
@@ -86,7 +85,7 @@ Provides:  drupal8(core) = %version
 # 3) Create "Provides: "
 %(tar --list --file %SOURCE0 --wildcards '*.info' | \
   awk '{"basename "$1" .info" | getline provide; \
-        print "Provides: drupal8("provide")"}')
+        print "Provides: drupal8("provide") = %version"}')
 
 %description
 Drupal is an open source content management platform powering millions of
@@ -115,6 +114,7 @@ rm -f web.config
 
 # Symlink vendors (bundled libraries)
 # TODO: Not all removed because some are not available as separate packages yet
+#       (see TODO's in "Requires: " above)
 #
 # It would be nice to be able to just symlink the entire vendor directory to a
 # global Composer vendor directory kind of like the nodejs/npm packages do for
@@ -125,12 +125,27 @@ rm -rf core/vendor/doctrine
 mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
 ln -s ../../../../../../pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
 #
+# easyrdf/easyrdf
+rm -rf core/vendor/easyrdf
+mkdir -p -m 755 core/vendor/easyrdf/easyrdf/lib
+ln -s ../../../../../../php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
+ln -s ../../../../../../php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
+#
+# guzzle/http
+# guzzle/* (some additional pkgs installed as dependencies for guzzle/http)
+# Lazy-symlinking here (symlink to base Guzzle path instead individual components)
+# core/vendor/guzzle/*/Guzzle -> ../../../../../pear/Guzzle (/usr/share/pear/Guzzle)
+for GUZZLE_COMPONENT in core/vendor/guzzle/*; do
+    rm -rf $GUZZLE_COMPONENT/*
+    ln -s ../../../../../pear/Guzzle $GUZZLE_COMPONENT/Guzzle
+done
+#
 # symfony/*
 # Lazy-symlinking here (symlink to base Symfony path instead individual components)
 # core/vendor/symfony/*/Symfony -> ../../../../../pear/Symfony (/usr/share/pear/Symfony)
 for SYMFONY_COMPONENT in core/vendor/symfony/*; do
     rm -rf $SYMFONY_COMPONENT/*
-    ln -s ../../../../../pear/Symfony $SYMFONY_COMPONENT/Symfony
+    ln -s ../../../../../pear/Guzzle $SYMFONY_COMPONENT/Symfony
 done
 #
 # twig/twig
@@ -138,10 +153,11 @@ rm -rf core/vendor/twig
 mkdir -p -m 755 core/vendor/twig/twig/lib
 ln -s ../../../../../../pear/Twig core/vendor/twig/twig/lib/Twig
 
-# Update macros' version and release
+# Update macros' version, release, and base path
 cp %{SOURCE1} .
-sed -e 's/__DRUPAL8_VERSION__/%version/' \
-    -e 's/__DRUPAL8_RELEASE__/%(echo %release | sed 's/%{dist}//')/' \
+sed -e 's:__DRUPAL8_VERSION__:%version:' \
+    -e 's:__DRUPAL8_RELEASE__:%(echo %release | sed 's/%{dist}//'):' \
+    -e 's:__DRUPAL8__:%drupal8:' \
     -i macros.%{name}
 
 
@@ -182,5 +198,5 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 
 
 %changelog
-* Tue Jan 29 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130129gitc4c71f4
+* Fri Feb 08 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130209git4bbff16
 - Initial package

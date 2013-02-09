@@ -1,7 +1,7 @@
 %drupal8_version   __DRUPAL8_VERSION__
 %drupal8_release   __DRUPAL8_RELEASE__
 
-%drupal8           %{_datadir}/drupal8
+%drupal8           __DRUPAL8__
 %drupal8_modules   %{drupal8}/modules
 %drupal8_profiles  %{drupal8}/profiles
 %drupal8_themes    %{drupal8}/themes
