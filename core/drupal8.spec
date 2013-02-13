@@ -1,10 +1,12 @@
-%global git_commit 4bbff1649e13b75a0b1fefe770d1130a483d2076
-%global git_date   20130209
+# See WARNING notes in %%description
+
+%global git_commit       6d5c211392fe2c2ed0732462f30d638b497ba099
+%global git_date         20130212
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
 
-%global drupal8 %{_datadir}/drupal8
+%global drupal8          %{_datadir}/drupal8
 
 Name:      drupal8
 Version:   8.0
@@ -92,6 +94,15 @@ Drupal is an open source content management platform powering millions of
 websites and applications. It’s built, used, and supported by an active and
 diverse community of people around the world.
 
+WARNING: This package does not use the exact dependency versions listed in
+         core's composer.json because they are not available. Right now this
+         package is simply trying to make sure core and its' "RPM magic"
+         (%{name}-rpmbuild package) can be packaged correctly.  The running
+         of tests with the available dependency versions will be added in
+         the future.
+
+         composer.json: http://drupalcode.org/project/drupal.git/blob/%{git_commit}:/core/composer.json
+
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
          your issue title with "[%name] ".
@@ -107,7 +118,9 @@ Group:    Development/Tools
 
 
 %prep
-%setup -q -n drupal-%{git_commit_short}
+%setup -q -c
+
+pushd drupal-%{git_commit_short}
 
 # Remove unneeded IIS file
 rm -f web.config
@@ -121,42 +134,52 @@ rm -f web.config
 # node_modules... :) :) :)
 #
 # doctrine/common
+# core/vendor/doctrine/common/lib/Doctrine/Common -> /usr/share/pear/Doctrine/Common
 rm -rf core/vendor/doctrine
 mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
-ln -s ../../../../../../pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
+ln -s %{_datadir}/pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
 #
 # easyrdf/easyrdf
+# core/vendor/easyrdf/easyrdf/lib/EasyRdf.php -> /usr/share/php/EasyRdf.php
+# core/vendor/easyrdf/easyrdf/lib/EasyRdf -> /usr/share/php/EasyRdf
 rm -rf core/vendor/easyrdf
 mkdir -p -m 755 core/vendor/easyrdf/easyrdf/lib
-ln -s ../../../../../../php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
-ln -s ../../../../../../php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
+ln -s %{_datadir}/php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
+ln -s %{_datadir}/php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
 #
 # guzzle/http
 # guzzle/* (some additional pkgs installed as dependencies for guzzle/http)
 # Lazy-symlinking here (symlink to base Guzzle path instead individual components)
-# core/vendor/guzzle/*/Guzzle -> ../../../../../pear/Guzzle (/usr/share/pear/Guzzle)
+# core/vendor/guzzle/*/Guzzle -> /usr/share/pear/Guzzle
 for GUZZLE_COMPONENT in core/vendor/guzzle/*; do
     rm -rf $GUZZLE_COMPONENT/*
-    ln -s ../../../../../pear/Guzzle $GUZZLE_COMPONENT/Guzzle
+    ln -s %{_datadir}/pear/Guzzle $GUZZLE_COMPONENT/Guzzle
 done
 #
 # symfony/*
 # Lazy-symlinking here (symlink to base Symfony path instead individual components)
-# core/vendor/symfony/*/Symfony -> ../../../../../pear/Symfony (/usr/share/pear/Symfony)
+# core/vendor/symfony/*/Symfony -> /usr/share/pear/Symfony
 for SYMFONY_COMPONENT in core/vendor/symfony/*; do
     rm -rf $SYMFONY_COMPONENT/*
-    ln -s ../../../../../pear/Guzzle $SYMFONY_COMPONENT/Symfony
+    ln -s %{_datadir}/pear/Symfony $SYMFONY_COMPONENT/Symfony
 done
 #
 # twig/twig
+# core/vendor/twig/twig/lib/Twig -> /usr/share/pear/Twig
 rm -rf core/vendor/twig
 mkdir -p -m 755 core/vendor/twig/twig/lib
-ln -s ../../../../../../pear/Twig core/vendor/twig/twig/lib/Twig
+ln -s %{_datadir}/pear/Twig core/vendor/twig/twig/lib/Twig
 
-# Update macros' version, release, and base path
+popd
+
 cp %{SOURCE1} .
+cp %{SOURCE2} .
+cp %{SOURCE3} .
+cp %{SOURCE4} .
+cp %{SOURCE5} .
+
+# Update macros' version and base path
 sed -e 's:__DRUPAL8_VERSION__:%version:' \
-    -e 's:__DRUPAL8_RELEASE__:%(echo %release | sed 's/%{dist}//'):' \
     -e 's:__DRUPAL8__:%drupal8:' \
     -i macros.%{name}
 
@@ -166,23 +189,31 @@ sed -e 's:__DRUPAL8_VERSION__:%version:' \
 
 
 %install
+pushd drupal-%{git_commit_short}
+
 mkdir -p -m 755 %{buildroot}%{drupal8}
 cp -pr * %{buildroot}%{drupal8}/
-cp -p  .htaccess %{buildroot}%{drupal8}/
-rm -f %{buildroot}%{drupal8}/macros.%{name}
+cp -p .htaccess %{buildroot}%{drupal8}/
+
+popd
 
 # RPM "magic"
-install -Dp -m 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/macros.%{name}
-install -Dp -m 0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/%{name}.attr
-install -Dp -m 0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/%{name}.prov
-install -Dp -m 0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/%{name}.req
+mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/rpm
+install -p -m 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/
+mkdir -p -m 0755 %{buildroot}%{_rpmconfigdir}/fileattrs
+install -p -m 0644 %{name}.attr %{buildroot}%{_rpmconfigdir}/fileattrs/
+install -p -m 0755 %{name}.prov %{buildroot}%{_rpmconfigdir}/
+install -p -m 0755 %{name}.req %{buildroot}%{_rpmconfigdir}/
 
 # Apache HTTPD conf
-install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.conf
+mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/httpd/conf.d
+install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %files
-%doc README.txt core/*.txt core/composer.*
+%doc drupal-%{git_commit_short}/README.txt
+%doc drupal-%{git_commit_short}/core/*.txt
+%doc drupal-%{git_commit_short}/core/composer.*
 %{drupal8}
 %exclude %{drupal8}/README.txt
 %exclude %{drupal8}/core/*.txt
@@ -198,5 +229,5 @@ install -Dp -m 0644 %SOURCE5 %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.con
 
 
 %changelog
-* Fri Feb 08 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130209git4bbff16
+* Wed Feb 13 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130212git6d5c211
 - Initial package
