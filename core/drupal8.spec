@@ -44,6 +44,7 @@ Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
 Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-EasyRdf
+Requires:  php-PsrLog
 # TODO: kriswallsmith/assetic
 # TODO: symfony-cmf/routing
 # phpci
@@ -85,9 +86,9 @@ Provides:  drupal8(core) = %version
 # 1) List *.info files from source tarball
 # 2) Get file basename
 # 3) Create "Provides: "
-%(tar --list --file %SOURCE0 --wildcards '*.info' | \
+%([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info' | \
   awk '{"basename "$1" .info" | getline provide; \
-        print "Provides: drupal8("provide") = %version"}')
+        print "Provides: drupal8("provide") = %version"}'))
 
 %description
 Drupal is an open source content management platform powering millions of
@@ -111,7 +112,6 @@ WARNING: This is just a development RPM.  Please submit issues at
 %package rpmbuild
 Summary:  Rpmbuild files for %{name}
 Group:    Development/Tools
-#Requires: %{name} = %{version}-%{release}
 
 %description rpmbuild
 %{summary}.
@@ -122,7 +122,8 @@ Group:    Development/Tools
 
 pushd drupal-%{git_commit_short}
 
-# Remove unneeded IIS file
+# Remove unneeded files
+find . -name '.git*' -delete
 rm -f web.config
 
 # Symlink vendors (bundled libraries)
@@ -169,6 +170,10 @@ done
 rm -rf core/vendor/twig
 mkdir -p -m 755 core/vendor/twig/twig/lib
 ln -s %{_datadir}/pear/Twig core/vendor/twig/twig/lib/Twig
+#
+# core/vendor/psr/log/Psr -> /usr/share/php/Psr
+rm -rf core/vendor/psr/log/*
+ln -s %{_datadir}/php/Psr core/vendor/psr/log/Psr
 
 popd
 
