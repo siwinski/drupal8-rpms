@@ -42,7 +42,7 @@ profiles: setup
 all: core modules themes profiles
 
 # TARGET: rpmlint   Run rpmlint on all spec files
-.PHONY rpmlint
+.PHONY: rpmlint
 rpmlint:
 	@echo ""
 	@for SPEC in */*.spec; do \
@@ -52,7 +52,7 @@ rpmlint:
 	done
 
 # TARGET: repos     Create RPM and SRPM repositories
-.PHONY repos
+.PHONY: repos
 repos: setup
 	@echo "-------------------- RPMS --------------------"
 	@createrepo --update -v ./rpmbuild/RPMS/noarch/
