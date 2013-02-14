@@ -11,10 +11,11 @@ help:
 	# Targets:
 	@egrep "^# TARGET:" [Mm]akefile | sed 's/^# TARGET:\s*/#   /'
 
-# TARGET: setup     Setup
+# TARGET: setup     Setup rpmbuild directories
 .PHONY: setup
 setup:
 	@mkdir -p -m 755 ./rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SRPMS}
+	@mkdir -p -m 755 ./rpmbuild/RPMS/noarch
 
 # TARGET: core      Make core RPMs
 .PHONY: core
@@ -49,6 +50,15 @@ rpmlint:
 		rpmlint ./$$SPEC; \
 		echo ""; \
 	done
+
+# TARGET: repos     Create RPM and SRPM repositories
+#.PHONY repos
+repos: setup
+	@echo "-------------------- RPMS --------------------"
+	@createrepo --update -v ./rpmbuild/RPMS/noarch/
+	@echo ""
+	@echo "-------------------- SRPMS --------------------"
+	@createrepo --update -v ./rpmbuild/SRPMS/
 
 # TARGET: clean     Delete any temporary or generated files
 .PHONY: clean
