@@ -40,6 +40,16 @@ profiles: setup
 #.PHONY: all
 all: core modules themes profiles
 
+# TARGET: rpmlint   Run rpmlint on all spec files
+#.PHONY rpmlint
+rpmlint:
+	@echo ""
+	@for SPEC in */*.spec; do \
+		echo "-------------------- $$SPEC --------------------"; \
+		rpmlint ./$$SPEC; \
+		echo ""; \
+	done
+
 # TARGET: clean     Delete any temporary or generated files
 .PHONY: clean
 clean:
