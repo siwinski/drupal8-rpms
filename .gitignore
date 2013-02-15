@@ -3,3 +3,7 @@
 *.zip
 *.rpm
 .project
+rpmbuild
+
+# Ignore all sub-directories
+*/*/
