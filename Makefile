@@ -2,7 +2,16 @@ PWD              = $(shell pwd)
 RPMBUILD_OPTIONS = --define "_topdir $(PWD)/rpmbuild"
 SPECTOOL_OPTIONS = --get-files --directory '$(PWD)/rpmbuild/SOURCES'
 
-# TARGET: help      Print this information
+RPM_DIST         = $(shell rpm --eval '%{dist}')
+REPO_RELEASE     = $(shell \
+						if [ ".fc18" == "$(RPM_DIST)" ]; then \
+							echo "fedora-18"; \
+						elif [ ".el6" == "$(RPM_DIST)" ]; then \
+							echo "epel-6"; \
+						fi)
+REPO_PATH        = fedorapeople.org:/srv/repos/siwinski/drupal8/$(REPO_RELEASE)
+
+# TARGET: help          Print this information
 .PHONY: help
 help:
 	# Usage:
@@ -11,13 +20,13 @@ help:
 	# Targets:
 	@egrep "^# TARGET:" [Mm]akefile | sed 's/^# TARGET:\s*/#   /'
 
-# TARGET: setup     Setup rpmbuild directories
+# TARGET: setup         Setup rpmbuild directories
 .PHONY: setup
 setup:
 	@mkdir -p -m 755 ./rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SRPMS}
 	@mkdir -p -m 755 ./rpmbuild/RPMS/noarch
 
-# TARGET: core      Make core RPMs
+# TARGET: core          Make core RPMs
 .PHONY: core
 core: CORE_SOURCE=$(shell spectool --list-files core/drupal8.spec | grep '^Source0:' | sed 's/Source0:\s*//' | xargs basename)
 core: setup
@@ -25,23 +34,23 @@ core: setup
 	@[ -e core/$(CORE_SOURCE) ] || ln -s ../rpmbuild/SOURCES/$(CORE_SOURCE) core/$(CORE_SOURCE)
 	rpmbuild $(RPMBUILD_OPTIONS) --define '_sourcedir $(PWD)/core' -ba core/drupal8.spec
 
-# TARGET: modules   Make all module RPMs
+# TARGET: modules       Make all module RPMs
 .PHONY: modules
 modules: setup
 
-# TARGET: themes    Make all theme RPMs
+# TARGET: themes        Make all theme RPMs
 .PHONY: themes
 themes: setup
 
-# TARGET: profiles  Make all profile RPMs
+# TARGET: profiles      Make all profile RPMs
 .PHONY: profiles
 profiles: setup
 
-# TARGET: all       Make all core, module, theme, and profile RPMs
+# TARGET: all           Make all core, module, theme, and profile RPMs
 .PHONY: all
 all: core modules themes profiles
 
-# TARGET: rpmlint   Run rpmlint on all spec files
+# TARGET: rpmlint       Run rpmlint on all spec files
 .PHONY: rpmlint
 rpmlint:
 	@echo ""
@@ -51,16 +60,27 @@ rpmlint:
 		echo ""; \
 	done
 
-# TARGET: repos     Create RPM and SRPM repositories
+# TARGET: repos-create  Create RPM and SRPM repos
 .PHONY: repos
-repos: setup
-	@echo "-------------------- RPMS --------------------"
-	@createrepo --update -v ./rpmbuild/RPMS/noarch/
+repos-create: repos-pull
+	@echo "-------------------- Create SRPMS repo --------------------"
+	createrepo --update -v rpmbuild/SRPMS/
 	@echo ""
-	@echo "-------------------- SRPMS --------------------"
-	@createrepo --update -v ./rpmbuild/SRPMS/
+	@echo "-------------------- Create RPMS repo --------------------"
+	createrepo --update -v rpmbuild/RPMS/noarch/
 
-# TARGET: clean     Delete any temporary or generated files
+# TARGET: repos-pull    Pull repos from fedorapeople.org
+.PHONY: repos-pull
+repos-pull: setup
+	@[ "" != "$(REPO_RELEASE)" ] || \
+		(echo "ERROR: Invalid distribution" 1>&2; exit 1)
+	@echo "-------------------- Pull SRPMS repo --------------------"
+	rsync -rlptv $(REPO_PATH)/SRPMS/ rpmbuild/SRPMS/
+	@echo "-------------------- Pull RPMS repo --------------------"
+	rsync -rlptv $(REPO_PATH)/noarch/ rpmbuild/RPMS/noarch/
+
+
+# TARGET: clean         Delete any temporary or generated files
 .PHONY: clean
 clean:
 	rm -rf ./rpmbuild
