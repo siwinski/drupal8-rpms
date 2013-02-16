@@ -5,11 +5,11 @@ Fedora Drupal 8 Dev RPMs
 
 Fedora Drafts
 -------------
-* [Feature](http://fedoraproject.org/wiki/User:Siwinski/FeaturesDraft:Drupal8)
-* [Packaging Guidelines](https://fedoraproject.org/wiki/User:Siwinski/PackagingDraft:Drupal8)
+* [Feature](http://fedoraproject.org/wiki/User:Siwinski/Draft:Features:Drupal8)
+* [Packaging Guidelines](https://fedoraproject.org/wiki/User:Siwinski/Draft:Packaging:Drupal8)
 
 Fedora Dev Repos
 ----------------
-* [fedora-18](http://repos.fedorapeople.org/repos/siwinski/drupal8/fedora-drupal8.repo)
-* [epel-6](http://repos.fedorapeople.org/repos/siwinski/drupal8/epel-drupal8.repo)
+* [fedora](http://repos.fedorapeople.org/repos/siwinski/drupal8/fedora-drupal8.repo)
+* [epel](http://repos.fedorapeople.org/repos/siwinski/drupal8/epel-drupal8.repo)
 
