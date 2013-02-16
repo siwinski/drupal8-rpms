@@ -1,7 +1,7 @@
 Fedora Drupal 8 Dev RPMs
 ========================
 
-*** **WARNING: These are just a development RPMs.  Please submit issues at <https://github.com/siwinski/drupal8-rpms/issues> and prefix your issue title with "`[drupal_machine_name] `"** ***
+*** **WARNING: These are just a development RPMs.  Please submit issues at <https://github.com/siwinski/drupal8-rpms/issues> and prefix your issue title with "[%{name}] " -- ex: "[drupal8] ", "[drupal8-devel] ", "[drupal8-token] "** ***
 
 Fedora Drafts
 -------------
