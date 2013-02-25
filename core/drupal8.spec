@@ -1,7 +1,7 @@
 # See WARNING notes in %%description
 
-%global git_commit       6d5c211392fe2c2ed0732462f30d638b497ba099
-%global git_date         20130212
+%global git_commit       8afbc081ddc04576b6c2643287cb9f6ac4458d32
+%global git_date         20130224
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -26,8 +26,7 @@ Source4:   %{name}.req
 Source5:   %{name}.conf
 
 BuildArch: noarch
-# Core:    php >= 5.3.0
-# Vendors: php >= 5.4.0 (bundled libraries)
+
 Requires:  php >= 5.3.0
 Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
 Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
@@ -46,7 +45,7 @@ Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-EasyRdf
 Requires:  php-PsrLog
 # TODO: kriswallsmith/assetic
-# TODO: symfony-cmf/routing
+# TODO: symfony-cmf/routing (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=914988)
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -64,6 +63,7 @@ Requires:  php-json
 Requires:  php-libxml
 Requires:  php-mbstring
 Requires:  php-pcre
+Requires:  php-pdo
 Requires:  php-recode
 Requires:  php-reflection
 Requires:  php-session
@@ -76,7 +76,6 @@ Requires:  php-zlib
 # phpci: Vendors (bundled libraries)
 Requires:  php-fileinfo
 Requires:  php-openssl
-Requires:  php-pdo
 Requires:  php-sockets
 Requires:  php-sqlite3
 Requires:  php-tokenizer
@@ -86,6 +85,7 @@ Provides:  drupal8(core) = %version
 # 1) List *.info files from source tarball
 # 2) Get file basename
 # 3) Create "Provides: "
+# NOTE: "-e %{SOURCE0}" is so rpmlint will run
 %([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info' | \
   awk '{"basename "$1" .info" | getline provide; \
         print "Provides: drupal8("provide") = %version"}'))
@@ -133,6 +133,7 @@ rm -f web.config
 # It would be nice to be able to just symlink the entire vendor directory to a
 # global Composer vendor directory kind of like the nodejs/npm packages do for
 # node_modules... :) :) :)
+# (see https://github.com/siwinski/php-composer-rpms)
 #
 # doctrine/common
 # core/vendor/doctrine/common/lib/Doctrine/Common -> /usr/share/pear/Doctrine/Common
@@ -234,5 +235,5 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
-* Wed Feb 13 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130212git6d5c211
+* Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130224git8afbc08
 - Initial package
