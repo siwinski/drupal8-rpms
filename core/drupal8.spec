@@ -85,7 +85,7 @@ Provides:  drupal8(core) = %version
 # 1) List *.info files from source tarball
 # 2) Get file basename
 # 3) Create "Provides: "
-# NOTE: "-e %{SOURCE0}" is so rpmlint will run
+# NOTE: "-e %%{SOURCE0}" is so rpmlint will run
 %([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info' | \
   awk '{"basename "$1" .info" | getline provide; \
         print "Provides: drupal8("provide") = %version"}'))
