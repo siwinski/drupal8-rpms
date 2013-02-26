@@ -178,11 +178,11 @@ ln -s %{_datadir}/php/Psr core/vendor/psr/log/Psr
 
 popd
 
-cp %{SOURCE1} .
-cp %{SOURCE2} .
-cp %{SOURCE3} .
-cp %{SOURCE4} .
-cp %{SOURCE5} .
+cp -p %{SOURCE1} .
+cp -p %{SOURCE2} .
+cp -p %{SOURCE3} .
+cp -p %{SOURCE4} .
+cp -p %{SOURCE5} .
 
 # Update macros' version and base path
 sed -e 's:__DRUPAL8_VERSION__:%version:' \
