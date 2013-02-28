@@ -44,7 +44,7 @@ Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
 Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-EasyRdf
 Requires:  php-PsrLog
-# TODO: kriswallsmith/assetic
+# TODO: kriswallsmith/assetic (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=916405)
 # TODO: symfony-cmf/routing (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=914988)
 # phpci
 Requires:  php-bcmath
