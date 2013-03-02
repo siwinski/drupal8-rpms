@@ -49,10 +49,12 @@ Requires:  php-PsrLog
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
+Requires:  php-core
 Requires:  php-ctype
 Requires:  php-curl
 Requires:  php-date
 Requires:  php-dom
+Requires:  php-filter
 Requires:  php-ftp
 Requires:  php-gd
 Requires:  php-gmp
@@ -69,10 +71,10 @@ Requires:  php-reflection
 Requires:  php-session
 Requires:  php-simplexml
 Requires:  php-spl
+Requires:  php-standard
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
-%{?fedora:Requires: php-filter}
 # phpci: Vendors (bundled libraries)
 Requires:  php-fileinfo
 Requires:  php-openssl
