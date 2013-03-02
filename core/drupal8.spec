@@ -27,7 +27,13 @@ Source5:   %{name}.conf
 
 BuildArch: noarch
 
-Requires:  php >= 5.3.0
+# Drupal lists a minimum version of PHP 5.3.5, but phpci only finds a minimum
+# version of 5.3.0 for core.  Since RHEL only provides PHP 5.3.3, let's try
+# 5.3.3 as a minimum version so we can test on RHEL as well.  Most likely this
+# will need to be changed to 5.3.5 before actual release and therefore most
+# likely will not be released in EPEL.
+Requires:  php >= 5.3.3
+
 Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
 Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
 Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
@@ -127,6 +133,9 @@ pushd drupal-%{git_commit_short}
 # Remove unneeded files
 find . -name '.git*' -delete
 rm -f web.config
+
+# Change PHP minimum version per previous statement regarding min PHP version
+sed 's/5.3.5/5.3.3/' -i core/includes/bootstrap.inc
 
 # Symlink vendors (bundled libraries)
 # TODO: Not all removed because some are not available as separate packages yet
