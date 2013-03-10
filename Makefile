@@ -60,15 +60,6 @@ rpmlint:
 		echo ""; \
 	done
 
-# TARGET: repos-create  Create RPM and SRPM repos
-.PHONY: repos
-repos-create: repos-pull
-	@echo "-------------------- Create SRPMS repo --------------------"
-	createrepo --update -v rpmbuild/SRPMS/
-	@echo ""
-	@echo "-------------------- Create RPMS repo --------------------"
-	createrepo --update -v rpmbuild/RPMS/noarch/
-
 # TARGET: repos-pull    Pull repos from fedorapeople.org
 .PHONY: repos-pull
 repos-pull: setup
@@ -79,6 +70,24 @@ repos-pull: setup
 	@echo "-------------------- Pull RPMS repo --------------------"
 	rsync -rlptv $(REPO_PATH)/noarch/ rpmbuild/RPMS/noarch/
 
+# TARGET: repos-create  Create RPM and SRPM repos
+.PHONY: repos
+repos-create: repos-pull
+	@echo "-------------------- Create SRPMS repo --------------------"
+	createrepo --update -v rpmbuild/SRPMS/
+	@echo ""
+	@echo "-------------------- Create RPMS repo --------------------"
+	createrepo --update -v rpmbuild/RPMS/noarch/
+
+# TARGET: repos-push    Push repos to fedorapeople.org
+.PHONY: repos-push
+repos-push: repos-create
+	@[ "" != "$(REPO_RELEASE)" ] || \
+		(echo "ERROR: Invalid distribution" 1>&2; exit 1)
+	@echo "-------------------- Push SRPMS repo --------------------"
+	rsync -avz rpmbuild/SRPMS/ $(REPO_PATH)/SRPMS/
+	@echo "-------------------- Push RPMS repo --------------------"
+	rsync -avz rpmbuild/RPMS/noarch/ $(REPO_PATH)/noarch/
 
 # TARGET: clean         Delete any temporary or generated files
 .PHONY: clean
