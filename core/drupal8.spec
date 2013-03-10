@@ -120,6 +120,7 @@ WARNING: This is just a development RPM.  Please submit issues at
 %package rpmbuild
 Summary:  Rpmbuild files for %{name}
 Group:    Development/Tools
+Requires: PyYAML
 
 %description rpmbuild
 %{summary}.
@@ -249,6 +250,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
 - *.info => *.info.yml
+- Added PyYAML require for rpmbuild sub-package
 
 * Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130224git8afbc08
 - Initial package
