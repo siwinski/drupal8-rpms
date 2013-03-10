@@ -1,7 +1,7 @@
 # See WARNING notes in %%description
 
-%global git_commit       8afbc081ddc04576b6c2643287cb9f6ac4458d32
-%global git_date         20130224
+%global git_commit       3210003e142f96c34566982b46c142995482e2cd
+%global git_date         20130309
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -10,7 +10,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.1.%{git_release}%{?dist}
+Release:   0.2.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -84,8 +84,8 @@ Requires:  php-zlib
 # phpci: Vendors (bundled libraries)
 Requires:  php-fileinfo
 Requires:  php-openssl
-Requires:  php-sockets
-Requires:  php-sqlite3
+Requires:  php-soap
+Requires:  php-tidy
 Requires:  php-tokenizer
 
 Provides:  drupal8(core) = %version
@@ -94,8 +94,8 @@ Provides:  drupal8(core) = %version
 # 2) Get file basename
 # 3) Create "Provides: "
 # NOTE: "-e %%{SOURCE0}" is so rpmlint will run
-%([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info' | \
-  awk '{"basename "$1" .info" | getline provide; \
+%([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info.yml' | \
+  awk '{"basename "$1" .info.yml" | getline provide; \
         print "Provides: drupal8("provide") = %version"}'))
 
 %description
@@ -246,5 +246,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
+- Updated to latest 2013-03-09 snapshot
+- *.info => *.info.yml
+
 * Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130224git8afbc08
 - Initial package
