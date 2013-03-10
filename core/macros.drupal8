@@ -4,3 +4,4 @@
 %drupal8_modules   %{drupal8}/modules
 %drupal8_profiles  %{drupal8}/profiles
 %drupal8_themes    %{drupal8}/themes
+%drupal8_libraries %{drupal8}/libraries
