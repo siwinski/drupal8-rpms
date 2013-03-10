@@ -3,7 +3,7 @@
 """
 Automatic requires generator for Drupal 8 modules, profiles, and themes.
 
-Parsed from *.info files.
+Parsed from *.info.yml files.
 """
 
 # Copyright 2013 Shawn Iwinski <shawn.iwinski@gmail.com>
@@ -27,29 +27,25 @@ Parsed from *.info files.
 # IN THE SOFTWARE.
 
 import sys
-import re
-
-RE_DEPENDENCIES = re.compile(r'dependencies\[\]\s*=\s*(.+)')
+import yaml
 
 
 def main():
-    print 'drupal8(core)'
-
     paths = [path.rstrip() for path in sys.stdin.readlines()]
-    deps  = []
+    deps  = ['core']
 
     for path in paths:
-        if not path.endswith('.info'):
+        if not path.endswith('.info.yml'):
             continue
 
-        info = open(path, 'r')
-        for line in info:
-            dep_line = re.match(RE_DEPENDENCIES, line)
-            if dep_line:
-                dep = dep_line.group(1)
-                if (dep not in deps):
+        file = open(path, 'r')
+        info = yaml.safe_load(file)
+        file.close()
+
+        if 'dependencies' in info:
+            for dep in info['dependencies']:
+                if dep not in deps:
                     deps.append(dep)
-        info.close()
 
     for dep in deps:
         print 'drupal8(' + dep + ')'
