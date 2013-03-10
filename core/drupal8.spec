@@ -48,6 +48,7 @@ Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
 Requires:  php-pear(guzzlephp.org/pear/Guzzle)
+Requires:  php-pear(pear.phpunit.de/PHPUnit)
 Requires:  php-EasyRdf
 Requires:  php-PsrLog
 # TODO: kriswallsmith/assetic (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=916405)
@@ -170,6 +171,15 @@ for GUZZLE_COMPONENT in core/vendor/guzzle/*; do
     ln -s %{_datadir}/pear/Guzzle $GUZZLE_COMPONENT/Guzzle
 done
 #
+# phpunit/*
+# Lazy-symlinking
+for PHPUNIT_COMPONENT in core/vendor/phpunit/*; do
+    rm -rf $PHPUNIT_COMPONENT
+    ln -s %{pear_phpdir} $PHPUNIT_COMPONENT
+done
+rm -f core/vendor/bin/phpunit
+ln -s %{_bindir}/phpunit core/vendor/bin/phpunit
+#
 # symfony/*
 # Lazy-symlinking here (symlink to base Symfony path instead individual components)
 # core/vendor/symfony/*/Symfony -> /usr/share/pear/Symfony
@@ -251,6 +261,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 - Updated to latest 2013-03-09 snapshot
 - *.info => *.info.yml
 - Added PyYAML require for rpmbuild sub-package
+- Un-bundled PHPUnit
 
 * Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130224git8afbc08
 - Initial package
