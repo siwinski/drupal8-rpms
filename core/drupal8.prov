@@ -3,7 +3,7 @@
 """
 Automatic provides generator for Drupal 8 modules, profiles, and themes.
 
-Parsed from *.info files.
+Parsed from *.info.yml files.
 """
 
 # Copyright 2013 Shawn Iwinski <shawn.iwinski@gmail.com>
@@ -34,8 +34,8 @@ def main():
     paths = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
-        if path.endswith('.info'):
-            print 'drupal8(' + os.path.basename(path)[:-len('.info')] + ')'
+        if path.endswith('.info.yml'):
+            print 'drupal8(' + os.path.basename(path)[:-len('.info.yml')] + ')'
 
 
 if __name__ == '__main__':
