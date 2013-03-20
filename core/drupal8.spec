@@ -243,11 +243,12 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %doc drupal-%{git_commit_short}/core/*.txt
 %doc drupal-%{git_commit_short}/core/composer.*
 %{drupal8}
+%config(noreplace) %{drupal8}/sites/default
 %exclude %{drupal8}/README.txt
 %exclude %{drupal8}/core/*.txt
 %exclude %{drupal8}/core/composer.*
 # Apache HTTPD conf
-%{_sysconfdir}/httpd/conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 %files rpmbuild
 %{_sysconfdir}/rpm/macros.%{name}
