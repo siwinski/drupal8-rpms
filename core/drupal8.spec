@@ -29,9 +29,13 @@ BuildArch: noarch
 
 # Drupal lists a minimum version of PHP 5.3.5, but phpci only finds a minimum
 # version of 5.3.0 for core.  Since RHEL only provides PHP 5.3.3, let's try
-# 5.3.3 as a minimum version so we can test on RHEL as well.  Most likely this
-# will need to be changed to 5.3.5 before actual release and therefore most
-# likely will not be released in EPEL.
+# 5.3.3 as a minimum version so we can test on RHEL as well.  This will need
+# to be changed to 5.3.5 before actual release and therefore most likely will
+# not be released in EPEL.
+#
+# See:
+# * "Bump minimum version of php required to 5.3.5" http://drupal.org/node/1751100
+# * "Bump minimum version of php required to 5.3.10" http://drupal.org/node/1800122
 Requires:  php >= 5.3.3
 
 Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
