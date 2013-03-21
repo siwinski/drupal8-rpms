@@ -229,6 +229,11 @@ mv %{buildroot}%{drupal8}/sites/* %{buildroot}%{_sysconfdir}/%{name}/
 rmdir %{buildroot}%{drupal8}/sites
 ln -s %{_sysconfdir}/%{name} %{buildroot}%{drupal8}/sites
 
+# Files
+mkdir -p -m 0755 %{buildroot}%{_localstatedir}/lib/%{name}/files/default
+ln -s %{_localstatedir}/lib/%{name}/files/default \
+      %{buildroot}%{_sysconfdir}/%{name}/default/files
+
 popd
 
 # RPM "magic"
@@ -274,6 +279,11 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %config  %{_sysconfdir}/%{name}/default/default.settings.php
 %exclude %{_sysconfdir}/%{name}/README.txt
 %exclude %{_sysconfdir}/%{name}/example.sites.php
+# Files
+%{_sysconfdir}/%{name}/default/files
+%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}
+%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}/files
+%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}/files/default
 # Apache HTTPD conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
@@ -291,6 +301,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 - Marked modules/profiles/themes README.txt as %%doc
 - Specific dir and file ownership
 - Removed example.gitignore
+- Added files dir and symlink
 
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
