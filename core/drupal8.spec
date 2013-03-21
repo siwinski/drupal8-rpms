@@ -262,7 +262,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %exclude %{_sysconfdir}/%{name}/README.txt
 %exclude %{_sysconfdir}/%{name}/example.sites.php
 # Apache HTTPD conf
-%{_sysconfdir}/httpd/conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
 %files rpmbuild
 %{_sysconfdir}/rpm/macros.%{name}
@@ -274,6 +274,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %changelog
 * Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.3.20130309git3210003
 - %%{drupal8}/sites => %%{_sysconfdir}/%%{name}
+- Marked Apache config as %%config
 
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
