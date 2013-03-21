@@ -10,7 +10,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.2.%{git_release}%{?dist}
+Release:   0.3.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -223,6 +223,12 @@ mkdir -p -m 755 %{buildroot}%{drupal8}
 cp -pr * %{buildroot}%{drupal8}/
 cp -p .htaccess %{buildroot}%{drupal8}/
 
+# Sites
+mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+mv %{buildroot}%{drupal8}/sites/* %{buildroot}%{_sysconfdir}/%{name}/
+rmdir %{buildroot}%{drupal8}/sites
+ln -s %{_sysconfdir}/%{name} %{buildroot}%{drupal8}/sites
+
 popd
 
 # RPM "magic"
@@ -239,6 +245,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %files
+# Core
 %doc drupal-%{git_commit_short}/README.txt
 %doc drupal-%{git_commit_short}/core/*.txt
 %doc drupal-%{git_commit_short}/core/composer.*
@@ -246,6 +253,14 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %exclude %{drupal8}/README.txt
 %exclude %{drupal8}/core/*.txt
 %exclude %{drupal8}/core/composer.*
+# Sites
+%doc drupal-%{git_commit_short}/sites/README.txt
+%doc drupal-%{git_commit_short}/sites/example.sites.php
+%dir     %{_sysconfdir}/%{name}
+%dir     %{_sysconfdir}/%{name}/default
+%config  %{_sysconfdir}/%{name}/default/default.settings.php
+%exclude %{_sysconfdir}/%{name}/README.txt
+%exclude %{_sysconfdir}/%{name}/example.sites.php
 # Apache HTTPD conf
 %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
@@ -257,6 +272,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.3.20130309git3210003
+- %%{drupal8}/sites => %%{_sysconfdir}/%%{name}
+
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
 - *.info => *.info.yml
