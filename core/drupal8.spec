@@ -249,10 +249,23 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %doc drupal-%{git_commit_short}/README.txt
 %doc drupal-%{git_commit_short}/core/*.txt
 %doc drupal-%{git_commit_short}/core/composer.*
-%{drupal8}
+%doc drupal-%{git_commit_short}/modules/README.txt
+%doc drupal-%{git_commit_short}/profiles/README.txt
+%doc drupal-%{git_commit_short}/themes/README.txt
+%dir %{drupal8}
+     %{drupal8}/.htaccess
+     %{drupal8}/*.*
+     %{drupal8}/core
+%dir %{drupal8}/modules
+%dir %{drupal8}/profiles
+     %{drupal8}/sites
+%dir %{drupal8}/themes
 %exclude %{drupal8}/README.txt
 %exclude %{drupal8}/core/*.txt
 %exclude %{drupal8}/core/composer.*
+%exclude %{drupal8}/modules/README.txt
+%exclude %{drupal8}/profiles/README.txt
+%exclude %{drupal8}/themes/README.txt
 # Sites
 %doc drupal-%{git_commit_short}/sites/README.txt
 %doc drupal-%{git_commit_short}/sites/example.sites.php
@@ -275,6 +288,8 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 * Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.3.20130309git3210003
 - %%{drupal8}/sites => %%{_sysconfdir}/%%{name}
 - Marked Apache config as %%config
+- Marked modules/profiles/themes README.txt as %%doc
+- Specific dir and file ownership
 
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
