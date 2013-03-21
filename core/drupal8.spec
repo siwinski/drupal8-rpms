@@ -134,7 +134,7 @@ pushd drupal-%{git_commit_short}
 
 # Remove unneeded files
 find . -name '.git*' -delete
-rm -f web.config
+rm -f web.config example.gitignore
 
 # Change PHP minimum version per previous statement regarding min PHP version
 sed 's/5.3.5/5.3.3/' -i core/includes/bootstrap.inc
@@ -290,6 +290,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 - Marked Apache config as %%config
 - Marked modules/profiles/themes README.txt as %%doc
 - Specific dir and file ownership
+- Removed example.gitignore
 
 * Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
