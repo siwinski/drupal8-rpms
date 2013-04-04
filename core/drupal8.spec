@@ -1,7 +1,7 @@
 # See WARNING notes in %%description
 
-%global git_commit       3210003e142f96c34566982b46c142995482e2cd
-%global git_date         20130309
+%global git_commit       eebd06373486e44dfccb4619bf8819108c23732e
+%global git_date         20130403
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -10,7 +10,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.3.%{git_release}%{?dist}
+Release:   0.4.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -27,7 +27,7 @@ Source5:   %{name}.conf
 
 BuildArch: noarch
 
-# Drupal lists a minimum version of PHP 5.3.5, but phpci only finds a minimum
+# Drupal lists a minimum version of PHP 5.3.10, but phpci only finds a minimum
 # version of 5.3.0 for core.  Since RHEL only provides PHP 5.3.3, let's try
 # 5.3.3 as a minimum version so we can test on RHEL as well.  This will need
 # to be changed to 5.3.5 before actual release and therefore most likely will
@@ -38,6 +38,8 @@ BuildArch: noarch
 # * "Bump minimum version of php required to 5.3.10" http://drupal.org/node/1800122
 Requires:  php >= 5.3.3
 
+Requires:  php-Assetic
+Requires:  php-EasyRdf
 Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
 Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
 Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
@@ -53,10 +55,8 @@ Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
 Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
 Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-pear(pear.phpunit.de/PHPUnit)
-Requires:  php-EasyRdf
 Requires:  php-PsrLog
-# TODO: kriswallsmith/assetic (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=916405)
-# TODO: symfony-cmf/routing (in progress... https://bugzilla.redhat.com/show_bug.cgi?id=914988)
+Requires:  php-SymfonyCmfRouting
 # phpci
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -86,16 +86,10 @@ Requires:  php-standard
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
-# phpci: Vendors (bundled libraries)
-Requires:  php-fileinfo
-Requires:  php-openssl
-Requires:  php-soap
-Requires:  php-tidy
-Requires:  php-tokenizer
 
 Provides:  drupal8(core) = %version
 # Auto-provides
-# 1) List *.info files from source tarball
+# 1) List *.info.yml files from source tarball
 # 2) Get file basename
 # 3) Create "Provides: "
 # NOTE: "-e %%{SOURCE0}" is so rpmlint will run
@@ -115,7 +109,7 @@ WARNING: This package does not use the exact dependency versions listed in
          of tests with the available dependency versions will be added in
          the future.
 
-         composer.json: http://drupalcode.org/project/drupal.git/blob/%{git_commit}:/core/composer.json
+         composer.json: http://drupalcode.org/project/drupal.git/blob/%{git_commit}:/composer.json
 
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
@@ -175,6 +169,12 @@ for GUZZLE_COMPONENT in core/vendor/guzzle/*; do
     ln -s %{_datadir}/pear/Guzzle $GUZZLE_COMPONENT/Guzzle
 done
 #
+# kriswallsmith/assetic
+rm -rf core/vendor/kriswallsmith/assetic/*
+mkdir -p -m 0755 core/vendor/kriswallsmith/assetic/src
+ln -s %{_datadir}/php/Assetic core/vendor/kriswallsmith/assetic/src/Assetic
+ln -s Assetic/functions.php core/vendor/kriswallsmith/assetic/src/functions.php
+#
 # phpunit/*
 # Lazy-symlinking
 for PHPUNIT_COMPONENT in core/vendor/phpunit/*; do
@@ -191,6 +191,10 @@ for SYMFONY_COMPONENT in core/vendor/symfony/*; do
     rm -rf $SYMFONY_COMPONENT/*
     ln -s %{_datadir}/pear/Symfony $SYMFONY_COMPONENT/Symfony
 done
+#
+# symfony-cmf/routing
+rm -rf core/vendor/symfony-cmf/routing/Symfony
+ln -s %{_datadir}/php/Symfony core/vendor/symfony-cmf/routing/Symfony
 #
 # twig/twig
 # core/vendor/twig/twig/lib/Twig -> /usr/share/pear/Twig
@@ -256,8 +260,8 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %files
 # Core
 %doc drupal-%{git_commit_short}/README.txt
+%doc drupal-%{git_commit_short}/composer.*
 %doc drupal-%{git_commit_short}/core/*.txt
-%doc drupal-%{git_commit_short}/core/composer.*
 %doc drupal-%{git_commit_short}/modules/README.txt
 %doc drupal-%{git_commit_short}/profiles/README.txt
 %doc drupal-%{git_commit_short}/themes/README.txt
@@ -270,8 +274,8 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
      %{drupal8}/sites
 %dir %{drupal8}/themes
 %exclude %{drupal8}/README.txt
+%exclude %{drupal8}/composer.*
 %exclude %{drupal8}/core/*.txt
-%exclude %{drupal8}/core/composer.*
 %exclude %{drupal8}/modules/README.txt
 %exclude %{drupal8}/profiles/README.txt
 %exclude %{drupal8}/themes/README.txt
@@ -299,6 +303,13 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Thu Apr 04 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.4.20130403giteebd063
+- Updated to 2013-04-03 snapshot
+- Updated note about PHP minimum version
+- Added php-Assetic and php-SymfonyCmfRouting requires
+- Removed vendors (bundled libraries) phpci requires
+- Updated composer file locations
+
 * Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.3.20130309git3210003
 - %%{drupal8}/sites => %%{_sysconfdir}/%%{name}
 - Marked Apache config as %%config
