@@ -1,7 +1,7 @@
 # See WARNING notes in %%description
 
-%global git_commit       eebd06373486e44dfccb4619bf8819108c23732e
-%global git_date         20130403
+%global git_commit       5838ea9ab2ee30f1183e2a6e628e2f4089e3733d
+%global git_date         20130504
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -10,7 +10,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.4.%{git_release}%{?dist}
+Release:   0.5.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -135,7 +135,7 @@ find . -name '.git*' -delete
 rm -f web.config example.gitignore
 
 # Change PHP minimum version per previous statement regarding min PHP version
-sed 's/5.3.5/5.3.3/' -i core/includes/bootstrap.inc
+sed 's/5.3.10/5.3.3/' -i core/includes/bootstrap.inc
 
 # Symlink vendors (bundled libraries)
 # TODO: Not all removed because some are not available as separate packages yet
@@ -303,6 +303,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Sun May 05 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.5.20130504git5838ea9
+- Updated to 2013-05-04 snapshot
+
 * Thu Apr 04 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.4.20130403giteebd063
 - Updated to 2013-04-03 snapshot
 - Updated note about PHP minimum version
