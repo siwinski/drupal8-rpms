@@ -1,7 +1,7 @@
 # See WARNING notes in %%description
 
-%global git_commit       e952a2115d0cdc7118abcc02a7bd3e3bf8afbd31
-%global git_date         20130612
+%global git_commit       1648a479c483d41591a6b943ea1a70741347a88d
+%global git_date         20130616
 
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
 %global git_release      %{git_date}git%{git_commit_short}
@@ -10,7 +10,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.6.%{git_release}%{?dist}
+Release:   0.7.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -303,7 +303,10 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
-* Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.6.
+* Wed Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
+- Updated to 2013-06-16 snapshot
+
+* Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.6.20130612gite952a21
 - Updated to 2013-06-12 snapshot
 
 * Sun May 05 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.5.20130504git5838ea9
