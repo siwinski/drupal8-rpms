@@ -303,8 +303,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
-* Wed Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
+* Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
+- No auto-provide hidden projects
 
 * Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.6.20130612gite952a21
 - Updated to 2013-06-12 snapshot

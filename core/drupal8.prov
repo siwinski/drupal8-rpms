@@ -28,13 +28,21 @@ Parsed from *.info.yml files.
 
 import sys
 import os
+import yaml
 
 
 def main():
     paths = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
-        if path.endswith('.info.yml'):
+        if not path.endswith('.info.yml'):
+            continue
+
+        file = open(path, 'r')
+        info = yaml.safe_load(file)
+        file.close()
+
+        if not 'hidden' in info or not info['hidden']:
             print 'drupal8(' + os.path.basename(path)[:-len('.info.yml')] + ')'
 
 
