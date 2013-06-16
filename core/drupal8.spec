@@ -87,15 +87,81 @@ Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
 
-Provides:  drupal8(core) = %version
-# Auto-provides
-# 1) List *.info.yml files from source tarball
-# 2) Get file basename
-# 3) Create "Provides: "
-# NOTE: "-e %%{SOURCE0}" is so rpmlint will run
-%([ -e %{SOURCE0} ] && (tar --list --file %{SOURCE0} --wildcards '*.info.yml' | \
-  awk '{"basename "$1" .info.yml" | getline provide; \
-        print "Provides: drupal8("provide") = %version"}'))
+# Virtual provides
+## Core
+Provides:  drupal8(core) = %{version}
+## Modules
+Provides:  drupal8(action) = %{version}
+Provides:  drupal8(aggregator) = %{version}
+Provides:  drupal8(ban) = %{version}
+Provides:  drupal8(block) = %{version}
+Provides:  drupal8(book) = %{version}
+Provides:  drupal8(breakpoint) = %{version}
+Provides:  drupal8(ckeditor) = %{version}
+Provides:  drupal8(color) = %{version}
+Provides:  drupal8(comment) = %{version}
+Provides:  drupal8(config) = %{version}
+Provides:  drupal8(contact) = %{version}
+Provides:  drupal8(contextual) = %{version}
+Provides:  drupal8(custom_block) = %{version}
+Provides:  drupal8(datetime) = %{version}
+Provides:  drupal8(dblog) = %{version}
+Provides:  drupal8(edit) = %{version}
+Provides:  drupal8(editor) = %{version}
+Provides:  drupal8(email) = %{version}
+Provides:  drupal8(entity) = %{version}
+Provides:  drupal8(entity_reference) = %{version}
+Provides:  drupal8(field) = %{version}
+Provides:  drupal8(field_sql_storage) = %{version}
+Provides:  drupal8(field_ui) = %{version}
+Provides:  drupal8(file) = %{version}
+Provides:  drupal8(filter) = %{version}
+Provides:  drupal8(forum) = %{version}
+Provides:  drupal8(hal) = %{version}
+Provides:  drupal8(help) = %{version}
+Provides:  drupal8(history) = %{version}
+Provides:  drupal8(image) = %{version}
+Provides:  drupal8(language) = %{version}
+Provides:  drupal8(layout) = %{version}
+Provides:  drupal8(link) = %{version}
+Provides:  drupal8(locale) = %{version}
+Provides:  drupal8(menu) = %{version}
+Provides:  drupal8(menu_link) = %{version}
+Provides:  drupal8(node) = %{version}
+Provides:  drupal8(number) = %{version}
+Provides:  drupal8(options) = %{version}
+Provides:  drupal8(overlay) = %{version}
+Provides:  drupal8(path) = %{version}
+Provides:  drupal8(php) = %{version}
+Provides:  drupal8(picture) = %{version}
+Provides:  drupal8(rdf) = %{version}
+Provides:  drupal8(rest) = %{version}
+Provides:  drupal8(search) = %{version}
+Provides:  drupal8(serialization) = %{version}
+Provides:  drupal8(shortcut) = %{version}
+Provides:  drupal8(simpletest) = %{version}
+Provides:  drupal8(statistics) = %{version}
+Provides:  drupal8(syslog) = %{version}
+Provides:  drupal8(system) = %{version}
+Provides:  drupal8(taxonomy) = %{version}
+Provides:  drupal8(telephone) = %{version}
+Provides:  drupal8(text) = %{version}
+Provides:  drupal8(toolbar) = %{version}
+Provides:  drupal8(tour) = %{version}
+Provides:  drupal8(tracker) = %{version}
+Provides:  drupal8(translation_entity) = %{version}
+Provides:  drupal8(update) = %{version}
+Provides:  drupal8(user) = %{version}
+Provides:  drupal8(views) = %{version}
+Provides:  drupal8(views_ui) = %{version}
+Provides:  drupal8(xmlrpc) = %{version}
+## Themes
+Provides:  drupal8(bartik) = %{version}
+Provides:  drupal8(seven) = %{version}
+Provides:  drupal8(stark) = %{version}
+## Profiles
+Provides:  drupal8(minimal) = %{version}
+Provides:  drupal8(standard) = %{version}
 
 %description
 Drupal is an open source content management platform powering millions of
@@ -306,6 +372,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 * Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
 - No auto-provide hidden projects
+- Static virtual provides instead of dynamic
 
 * Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.6.20130612gite952a21
 - Updated to 2013-06-12 snapshot
