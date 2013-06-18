@@ -32,7 +32,8 @@ import yaml
 
 
 def main():
-    paths = [path.rstrip() for path in sys.stdin.readlines()]
+    version = sys.argv[1] if len(sys.argv) > 1 else None
+    paths   = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
         if not path.endswith('.info.yml'):
@@ -43,7 +44,11 @@ def main():
         file.close()
 
         if not 'hidden' in info or not info['hidden']:
-            print 'drupal8(' + os.path.basename(path)[:-len('.info.yml')] + ')'
+            print 'drupal8(' + os.path.basename(path)[:-len('.info.yml')] + ')',
+            if version is not None:
+                print '=', version
+            else:
+                print ''
 
 
 if __name__ == '__main__':
