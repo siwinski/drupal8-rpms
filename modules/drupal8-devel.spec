@@ -1,9 +1,8 @@
 %global module_name      devel
-%global module_datestamp 1359204477
 
 Name:          drupal8-%{module_name}
 Version:       1.0
-Release:       0.%{module_datestamp}%{?dist}
+Release:       0.dev%{?dist}
 Summary:       Various blocks, pages, and functions for developers
 
 Group:         Applications/Publishing
@@ -21,6 +20,9 @@ Requires:      php-pcre
 Requires:      php-reflection
 
 %description
+***** WARNING: This RPM package is not correctly versioned and will *****
+*****          just build the latest DEV version                    *****
+
 A suite of modules containing fun for module developers and themers ...
 
 Devel
@@ -49,7 +51,7 @@ WARNING: This is just a development RPM.  Please submit issues at
 
 
 %prep
-%setup -q -c
+%setup -q -n %{module_name}
 
 
 %build
@@ -57,16 +59,16 @@ WARNING: This is just a development RPM.  Please submit issues at
 
 
 %install
-mkdir -p -m 755 %{buildroot}%{drupal8_modules}
-cp -pr %{module_name} %{buildroot}%{drupal8_modules}/
+mkdir -p -m 0755 %{buildroot}%{drupal8_modules}/%{module_name}
+cp -pr * %{buildroot}%{drupal8_modules}/%{module_name}/
 
 
 %files
-%doc %{module_name}/LICENSE.txt
-%doc %{module_name}/README.txt
+%doc *.txt
 %{drupal8_modules}/%{module_name}
+%exclude %{drupal8_modules}/%{module_name}/*.txt
 
 
 %changelog
-* Sun Jan 27 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 1.0-0.1359204477
+* Tue Jun 18 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 1.0-0.dev
 - Initial package
