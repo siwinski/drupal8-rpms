@@ -1,4 +1,4 @@
-%global module_name      devel
+%global module_name devel
 
 Name:          drupal8-%{module_name}
 Version:       1.0
