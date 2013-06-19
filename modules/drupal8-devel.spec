@@ -20,8 +20,12 @@ Requires:      php-pcre
 Requires:      php-reflection
 
 %description
-***** WARNING: This RPM package is not correctly versioned and will *****
-*****          just build the latest DEV version                    *****
+***** WARNING: This RPM package is not correctly versioned and will just *****
+*****          build the latest DEV version.                             *****
+
+***** WARNING: This is just a development RPM.  Please submit issues at  *****
+*****          https://github.com/siwinski/drupal8-rpms/issues and       *****
+*****          prefix your issue title with "[%name] ".                  *****
 
 A suite of modules containing fun for module developers and themers ...
 
@@ -44,10 +48,6 @@ Devel Node Access (DNA)
 View the node access entries for the node(s) that are shown on a page. Essential
 for developers of node access modules and useful for site admins in debugging
 problems with those modules.
-
-WARNING: This is just a development RPM.  Please submit issues at
-         https://github.com/siwinski/drupal8-rpms/issues and prefix
-         your issue title with "[%name] ".
 
 
 %prep
