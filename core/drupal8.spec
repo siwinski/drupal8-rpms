@@ -1,16 +1,14 @@
 # See WARNING notes in %%description
 
-%global git_commit       1648a479c483d41591a6b943ea1a70741347a88d
-%global git_date         20130616
-
+%global git_commit       784cebbe5a3ef9caa2211bca9a0ac1e510c6bb7a
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_release      %{git_date}git%{git_commit_short}
+%global git_release      alpha4
 
 %global drupal8          %{_datadir}/drupal8
 
 Name:      drupal8
 Version:   8.0
-Release:   0.7.%{git_release}%{?dist}
+Release:   0.8.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -57,7 +55,7 @@ Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-pear(pear.phpunit.de/PHPUnit)
 Requires:  php-PsrLog
 Requires:  php-SymfonyCmfRouting
-# phpci
+# phpcompatinfo
 Requires:  php-bcmath
 Requires:  php-bz2
 Requires:  php-core
@@ -369,6 +367,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
+- Updated to release tag 8.0-alpha4
+
 * Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
 - No auto-provide hidden projects
