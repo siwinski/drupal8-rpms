@@ -55,6 +55,8 @@ Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-pear(pear.phpunit.de/PHPUnit)
 Requires:  php-PsrLog
 #Requires:  php-SymfonyCmfRouting
+## TODO: sdboyer/gliph (https://bugzilla.redhat.com/show_bug.cgi?id=1022644)
+## TODO: zendframework/zend-feed (BZ approved but needs to be added to stable)
 # phpcompatinfo
 Requires:  php-bcmath
 Requires:  php-bz2
