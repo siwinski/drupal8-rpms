@@ -6,6 +6,40 @@
 
 %global drupal8          %{_datadir}/drupal8
 
+# kriswallsmith/assetic
+%global assetic_min_ver             1.1.0
+%global assetic_max_ver             1.2.0
+# doctrine/*
+%global doctrine_min_ver            2.4.0
+%global doctrine_max_ver            2.5.0
+# easyrdf/easyrdf
+%global easyrdf_min_ver             0.8.0
+%global easyrdf_max_ver             0.9.0
+# sdboyer/gliph
+%global gliph_min_ver               0.1.0
+%global gliph_max_ver               0.2.0
+# guzzle/*
+%global guzzle_min_ver              3.7.0
+%global guzzle_max_ver              3.8.0
+# phpunit/phpunit
+%global phpunit_min_ver             3.7.0
+%global phpunit_max_ver             3.8.0
+# psr/log
+%global psrlog_min_ver              1.0.0
+%global psrlog_max_ver              1.1.0
+# symfony/*
+%global symfony_min_ver             2.3.0
+%global symfony_max_ver             2.4.0
+# symfony-cmf/routing
+%global symfony_cmf_routing_min_ver 1.1.0
+%global symfony_cmf_routing_max_ver 1.2.0
+# twig/twig
+%global twig_min_ver                1.12.0
+%global twig_max_ver                1.13.0
+# zendframework/*
+%global zendframework_min_ver       2.2.0
+%global zendframework_max_ver       2.3.0
+
 Name:      drupal8
 Version:   8.0
 Release:   0.8.%{git_release}%{?dist}
@@ -27,27 +61,45 @@ BuildArch: noarch
 
 Requires:  php >= 5.3.10
 
-Requires:  php-Assetic
-#Requires:  php-EasyRdf
-#Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
-#Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
-#Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
-#Requires:  php-pear(pear.symfony.com/HttpFoundation) < 2.4
-#Requires:  php-pear(pear.symfony.com/HttpKernel) < 2.4
-#Requires:  php-pear(pear.symfony.com/Routing) < 2.4
-#Requires:  php-pear(pear.symfony.com/Serializer) < 2.4
-#Requires:  php-pear(pear.symfony.com/Validator) < 2.4
-#Requires:  php-pear(pear.symfony.com/Yaml) < 2.4
-#Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
-#Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
-#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
-#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
-Requires:  php-pear(guzzlephp.org/pear/Guzzle)
-Requires:  php-pear(pear.phpunit.de/PHPUnit)
-Requires:  php-PsrLog
-#Requires:  php-SymfonyCmfRouting
+Requires:  php-Assetic >= %{assetic_min_ver}
+Requires:  php-Assetic <  %{assetic_max_ver}
+#Requires:  php-EasyRdf >= %{easyrdf_min_ver}
+#Requires:  php-EasyRdf <  %{easyrdf_max_ver}
 ## TODO: sdboyer/gliph (https://bugzilla.redhat.com/show_bug.cgi?id=1022644)
+#Requires:  php-gliph >= %{gliph_min_ver}
+#Requires:  php-gliph <  %{gliph_max_ver}
+#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= %{doctrine_min_ver}
+#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  %{doctrine_max_ver}
+#Requires:  php-pear(pear.symfony.com/ClassLoader) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/ClassLoader) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/DependencyInjection) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/DependencyInjection) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/EventDispatcher) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/EventDispatcher) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/HttpFoundation) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/HttpFoundation) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/HttpKernel) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/HttpKernel) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/Routing) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/Routing) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/Serializer) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/Serializer) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/Validator) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/Validator) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.symfony.com/Yaml) >= %{symfony_min_ver}
+#Requires:  php-pear(pear.symfony.com/Yaml) <  %{symfony_max_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle) >= %{guzzle_min_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle) <  %{guzzle_max_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit) >= %{phpunit_min_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit) <  %{phpunit_max_ver}
+Requires:  php-PsrLog >= %{psrlog_min_ver}
+Requires:  php-PsrLog <  %{psrlog_max_ver}
+#Requires:  php-SymfonyCmfRouting
 ## TODO: zendframework/zend-feed (BZ approved but needs to be added to stable)
+#Requires:  php-ZendFramework2-Feed >= %{zendframework_min_ver}
+#Requires:  php-ZendFramework2-Feed <  %{zendframework_max_ver}
 # phpcompatinfo
 Requires:  php-bz2
 Requires:  php-core
@@ -365,6 +417,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
 - Require correct min PHP version 5.3.10 instead of 5.3.3
+- Require correct min/max pkg versions
 - Use bundled Doctrine, EasyRdf, Symfony, Symfony CMF Routing, and Twig
   because required versions are not available in Fedora
 - Updated phpcompatinfo requires:
