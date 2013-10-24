@@ -49,7 +49,6 @@ Requires:  php-PsrLog
 ## TODO: sdboyer/gliph (https://bugzilla.redhat.com/show_bug.cgi?id=1022644)
 ## TODO: zendframework/zend-feed (BZ approved but needs to be added to stable)
 # phpcompatinfo
-Requires:  php-bcmath
 Requires:  php-bz2
 Requires:  php-core
 Requires:  php-ctype
@@ -59,13 +58,13 @@ Requires:  php-dom
 Requires:  php-filter
 Requires:  php-ftp
 Requires:  php-gd
-Requires:  php-gmp
 Requires:  php-hash
 Requires:  php-iconv
 Requires:  php-intl
 Requires:  php-json
 Requires:  php-libxml
 Requires:  php-mbstring
+Requires:  php-openssl
 Requires:  php-pcre
 Requires:  php-pdo
 Requires:  php-recode
@@ -74,9 +73,15 @@ Requires:  php-session
 Requires:  php-simplexml
 Requires:  php-spl
 Requires:  php-standard
+Requires:  php-tokenizer
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
+# phpcompatinfo: Bundled packages
+Requires:  php-fileinfo
+Requires:  php-filter
+Requires:  php-posix
+Requires:  php-tidy
 
 # Virtual provides
 ## Core
@@ -166,6 +171,8 @@ WARNING: This package uses bundled software because the required versions are
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
          your issue title with "[%name] ".
+
+Optional: APC (php-pecl-apc)
 
 
 %package rpmbuild
@@ -360,6 +367,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 - Require correct min PHP version 5.3.10 instead of 5.3.3
 - Use bundled Doctrine, EasyRdf, Symfony, Symfony CMF Routing, and Twig
   because required versions are not available in Fedora
+- Updated phpcompatinfo requires:
+  Added: openssl, tokenizer
+  Removed: bcmath, gmp
 
 * Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
