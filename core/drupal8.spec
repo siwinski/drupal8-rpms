@@ -37,24 +37,24 @@ BuildArch: noarch
 Requires:  php >= 5.3.3
 
 Requires:  php-Assetic
-Requires:  php-EasyRdf
-Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
-Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
-Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
-Requires:  php-pear(pear.symfony.com/HttpFoundation) < 2.4
-Requires:  php-pear(pear.symfony.com/HttpKernel) < 2.4
-Requires:  php-pear(pear.symfony.com/Routing) < 2.4
-Requires:  php-pear(pear.symfony.com/Serializer) < 2.4
-Requires:  php-pear(pear.symfony.com/Validator) < 2.4
-Requires:  php-pear(pear.symfony.com/Yaml) < 2.4
-Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
-Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
-Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
-Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
+#Requires:  php-EasyRdf
+#Requires:  php-pear(pear.symfony.com/ClassLoader) < 2.4
+#Requires:  php-pear(pear.symfony.com/DependencyInjection) < 2.4
+#Requires:  php-pear(pear.symfony.com/EventDispatcher) < 2.4
+#Requires:  php-pear(pear.symfony.com/HttpFoundation) < 2.4
+#Requires:  php-pear(pear.symfony.com/HttpKernel) < 2.4
+#Requires:  php-pear(pear.symfony.com/Routing) < 2.4
+#Requires:  php-pear(pear.symfony.com/Serializer) < 2.4
+#Requires:  php-pear(pear.symfony.com/Validator) < 2.4
+#Requires:  php-pear(pear.symfony.com/Yaml) < 2.4
+#Requires:  php-pear(pear.twig-project.org/Twig) >= 1.0
+#Requires:  php-pear(pear.twig-project.org/Twig) <  2.0
+#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= 2.3.0
+#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  2.4.0
 Requires:  php-pear(guzzlephp.org/pear/Guzzle)
 Requires:  php-pear(pear.phpunit.de/PHPUnit)
 Requires:  php-PsrLog
-Requires:  php-SymfonyCmfRouting
+#Requires:  php-SymfonyCmfRouting
 # phpcompatinfo
 Requires:  php-bcmath
 Requires:  php-bz2
@@ -212,17 +212,17 @@ sed 's/5.3.10/5.3.3/' -i core/includes/bootstrap.inc
 #
 # doctrine/common
 # core/vendor/doctrine/common/lib/Doctrine/Common -> /usr/share/pear/Doctrine/Common
-rm -rf core/vendor/doctrine
-mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
-ln -s %{_datadir}/pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
+#rm -rf core/vendor/doctrine
+#mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
+#ln -s %{_datadir}/pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
 #
 # easyrdf/easyrdf
 # core/vendor/easyrdf/easyrdf/lib/EasyRdf.php -> /usr/share/php/EasyRdf.php
 # core/vendor/easyrdf/easyrdf/lib/EasyRdf -> /usr/share/php/EasyRdf
-rm -rf core/vendor/easyrdf
-mkdir -p -m 755 core/vendor/easyrdf/easyrdf/lib
-ln -s %{_datadir}/php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
-ln -s %{_datadir}/php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
+#rm -rf core/vendor/easyrdf
+#mkdir -p -m 755 core/vendor/easyrdf/easyrdf/lib
+#ln -s %{_datadir}/php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
+#ln -s %{_datadir}/php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
 #
 # guzzle/http
 # guzzle/* (some additional pkgs installed as dependencies for guzzle/http)
@@ -251,20 +251,20 @@ ln -s %{_bindir}/phpunit core/vendor/bin/phpunit
 # symfony/*
 # Lazy-symlinking here (symlink to base Symfony path instead individual components)
 # core/vendor/symfony/*/Symfony -> /usr/share/pear/Symfony
-for SYMFONY_COMPONENT in core/vendor/symfony/*; do
-    rm -rf $SYMFONY_COMPONENT/*
-    ln -s %{_datadir}/pear/Symfony $SYMFONY_COMPONENT/Symfony
-done
+#for SYMFONY_COMPONENT in core/vendor/symfony/*; do
+#    rm -rf $SYMFONY_COMPONENT/*
+#    ln -s %{_datadir}/pear/Symfony $SYMFONY_COMPONENT/Symfony
+#done
 #
 # symfony-cmf/routing
-rm -rf core/vendor/symfony-cmf/routing/Symfony
-ln -s %{_datadir}/php/Symfony core/vendor/symfony-cmf/routing/Symfony
+#rm -rf core/vendor/symfony-cmf/routing/Symfony
+#ln -s %{_datadir}/php/Symfony core/vendor/symfony-cmf/routing/Symfony
 #
 # twig/twig
 # core/vendor/twig/twig/lib/Twig -> /usr/share/pear/Twig
-rm -rf core/vendor/twig
-mkdir -p -m 755 core/vendor/twig/twig/lib
-ln -s %{_datadir}/pear/Twig core/vendor/twig/twig/lib/Twig
+#rm -rf core/vendor/twig
+#mkdir -p -m 755 core/vendor/twig/twig/lib
+#ln -s %{_datadir}/pear/Twig core/vendor/twig/twig/lib/Twig
 #
 # core/vendor/psr/log/Psr -> /usr/share/php/Psr
 rm -rf core/vendor/psr/log/*
@@ -369,6 +369,8 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %changelog
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
+- Use bundled Doctrine, EasyRdf, Symfony, Symfony CMF Routing, and Twig
+  because required versions are not available in Fedora
 
 * Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
