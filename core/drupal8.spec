@@ -25,16 +25,7 @@ Source5:   %{name}.conf
 
 BuildArch: noarch
 
-# Drupal lists a minimum version of PHP 5.3.10, but phpci only finds a minimum
-# version of 5.3.0 for core.  Since RHEL only provides PHP 5.3.3, let's try
-# 5.3.3 as a minimum version so we can test on RHEL as well.  This will need
-# to be changed to 5.3.5 before actual release and therefore most likely will
-# not be released in EPEL.
-#
-# See:
-# * "Bump minimum version of php required to 5.3.5" http://drupal.org/node/1751100
-# * "Bump minimum version of php required to 5.3.10" http://drupal.org/node/1800122
-Requires:  php >= 5.3.3
+Requires:  php >= 5.3.10
 
 Requires:  php-Assetic
 #Requires:  php-EasyRdf
@@ -168,14 +159,9 @@ Drupal is an open source content management platform powering millions of
 websites and applications. It’s built, used, and supported by an active and
 diverse community of people around the world.
 
-WARNING: This package does not use the exact dependency versions listed in
-         core's composer.json because they are not available. Right now this
-         package is simply trying to make sure core and its' "RPM magic"
-         (%{name}-rpmbuild package) can be packaged correctly.  The running
-         of tests with the available dependency versions will be added in
-         the future.
-
-         composer.json: http://drupalcode.org/project/drupal.git/blob/%{git_commit}:/composer.json
+WARNING: This package uses bundled software because the required versions are
+         not available in Fedora.  When the required versions are available in
+         Fedora this package will be updated to use those.
 
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
@@ -371,6 +357,7 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %changelog
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
+- Require correct min PHP version 5.3.10 instead of 5.3.3
 - Use bundled Doctrine, EasyRdf, Symfony, Symfony CMF Routing, and Twig
   because required versions are not available in Fedora
 
