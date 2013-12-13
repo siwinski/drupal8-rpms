@@ -1,9 +1,19 @@
+# RPM and source stuff
 *.gz
 *.tgz
 *.zip
 *.rpm
-.project
 rpmbuild
+
+# Temp files
+*~
+*.swp
+
+# Eclipse
+.buildpath
+.project
+.pydevproject
+.settings/
 
 # Ignore all sub-directories
 */*/

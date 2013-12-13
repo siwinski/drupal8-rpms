@@ -1,48 +1,45 @@
 # See WARNING notes in %%description
 
-%global git_commit       784cebbe5a3ef9caa2211bca9a0ac1e510c6bb7a
+%global git_commit       172cd2652a6d938f732970dcafdd751155f53236
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_release      alpha4
+%global git_release      alpha6
 
 %global drupal8          %{_datadir}/drupal8
 
-# kriswallsmith/assetic
+# "kriswallsmith/assetic": "1.1.*@alpha"
 %global assetic_min_ver             1.1.0
 %global assetic_max_ver             1.2.0
-# doctrine/*
+# "doctrine/common": "2.4.*@beta"
 %global doctrine_min_ver            2.4.0
 %global doctrine_max_ver            2.5.0
-# easyrdf/easyrdf
+# "easyrdf/easyrdf": "0.8.*@beta"
 %global easyrdf_min_ver             0.8.0
 %global easyrdf_max_ver             0.9.0
-# sdboyer/gliph
+# "sdboyer/gliph": "0.1.*"
 %global gliph_min_ver               0.1.0
 %global gliph_max_ver               0.2.0
-# guzzle/*
+# "guzzle/http": "3.7.*"
 %global guzzle_min_ver              3.7.0
 %global guzzle_max_ver              3.8.0
-# phpunit/phpunit
+# "phpunit/phpunit": "3.7.*"
 %global phpunit_min_ver             3.7.0
 %global phpunit_max_ver             3.8.0
-# psr/log
-%global psrlog_min_ver              1.0.0
-%global psrlog_max_ver              1.1.0
-# symfony/*
+# "symfony/*": "2.3.*"
 %global symfony_min_ver             2.3.0
 %global symfony_max_ver             2.4.0
-# symfony-cmf/routing
+# "symfony-cmf/routing": "1.1.*@alpha"
 %global symfony_cmf_routing_min_ver 1.1.0
 %global symfony_cmf_routing_max_ver 1.2.0
-# twig/twig
+# "twig/twig": "1.12.*"
 %global twig_min_ver                1.12.0
 %global twig_max_ver                1.13.0
-# zendframework/*
+# "zendframework/zend-feed": "2.2.*"
 %global zendframework_min_ver       2.2.0
 %global zendframework_max_ver       2.3.0
 
 Name:      drupal8
 Version:   8.0
-Release:   0.8.%{git_release}%{?dist}
+Release:   0.9.%{git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -56,50 +53,50 @@ Source3:   %{name}.prov
 Source4:   %{name}.req
 # Apache HTTPD conf
 Source5:   %{name}.conf
+# Set auto-loader to use include path so bundled libraries can simply be removed
+#Patch0:    ${name}-autoload-use-include-path.patch
 
 BuildArch: noarch
 
-Requires:  php >= 5.3.10
+#Requires:  php >= 5.3.10
+Requires:  php >= 5.3
 
-Requires:  php-Assetic >= %{assetic_min_ver}
-Requires:  php-Assetic <  %{assetic_max_ver}
-#Requires:  php-EasyRdf >= %{easyrdf_min_ver}
-#Requires:  php-EasyRdf <  %{easyrdf_max_ver}
-## TODO: sdboyer/gliph (https://bugzilla.redhat.com/show_bug.cgi?id=1022644)
-#Requires:  php-gliph >= %{gliph_min_ver}
-#Requires:  php-gliph <  %{gliph_max_ver}
+Requires:  php-Assetic                     >= %{assetic_min_ver}
+Requires:  php-Assetic                     <  %{assetic_max_ver}
+#Requires:  php-EasyRdf                     >= %{easyrdf_min_ver}
+#Requires:  php-EasyRdf                     <  %{easyrdf_max_ver}
+Requires:  php-gliph                       >= %{gliph_min_ver}
+Requires:  php-gliph                       <  %{gliph_max_ver}
+Requires:  php-symfony-classloader         >= %{symfony_min_ver}
+Requires:  php-symfony-classloader         <  %{symfony_max_ver}
+Requires:  php-symfony-dependencyinjection >= %{symfony_min_ver}
+Requires:  php-symfony-dependencyinjection <  %{symfony_max_ver}
+Requires:  php-symfony-eventdispatcher     >= %{symfony_min_ver}
+Requires:  php-symfony-eventdispatcher     <  %{symfony_max_ver}
+Requires:  php-symfony-httpfoundation      >= %{symfony_min_ver}
+Requires:  php-symfony-httpfoundation      <  %{symfony_max_ver}
+Requires:  php-symfony-httpkernel          >= %{symfony_min_ver}
+Requires:  php-symfony-httpkernel          <  %{symfony_max_ver}
+Requires:  php-symfony-routing             >= %{symfony_min_ver}
+Requires:  php-symfony-routing             <  %{symfony_max_ver}
+Requires:  php-symfony-serializer          >= %{symfony_min_ver}
+Requires:  php-symfony-serializer          <  %{symfony_max_ver}
+Requires:  php-symfony-validator           >= %{symfony_min_ver}
+Requires:  php-symfony-validator           <  %{symfony_max_ver}
+Requires:  php-symfony-yaml                >= %{symfony_min_ver}
+Requires:  php-symfony-yaml                <  %{symfony_max_ver}
+Requires:  php-SymfonyCmfRouting           >= %{symfony_cmf_routing_min_ver}
+Requires:  php-SymfonyCmfRouting           <  %{symfony_cmf_routing_max_ver}
+Requires:  php-ZendFramework2-Feed         >= %{zendframework_min_ver}
+Requires:  php-ZendFramework2-Feed         <  %{zendframework_max_ver}
 #Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= %{doctrine_min_ver}
 #Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  %{doctrine_max_ver}
-#Requires:  php-pear(pear.symfony.com/ClassLoader) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/ClassLoader) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/DependencyInjection) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/DependencyInjection) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/EventDispatcher) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/EventDispatcher) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/HttpFoundation) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/HttpFoundation) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/HttpKernel) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/HttpKernel) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/Routing) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/Routing) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/Serializer) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/Serializer) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/Validator) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/Validator) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.symfony.com/Yaml) >= %{symfony_min_ver}
-#Requires:  php-pear(pear.symfony.com/Yaml) <  %{symfony_max_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle) >= %{guzzle_min_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle) <  %{guzzle_max_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit) >= %{phpunit_min_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit) <  %{phpunit_max_ver}
-Requires:  php-PsrLog >= %{psrlog_min_ver}
-Requires:  php-PsrLog <  %{psrlog_max_ver}
-#Requires:  php-SymfonyCmfRouting
-## TODO: zendframework/zend-feed (BZ approved but needs to be added to stable)
-#Requires:  php-ZendFramework2-Feed >= %{zendframework_min_ver}
-#Requires:  php-ZendFramework2-Feed <  %{zendframework_max_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig)               >= %{twig_min_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig)               <  %{twig_max_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle)                >= %{guzzle_min_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle)                <  %{guzzle_max_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit)                  >= %{phpunit_min_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit)                  <  %{phpunit_max_ver}
 # phpcompatinfo
 Requires:  php-bz2
 Requires:  php-core
@@ -129,11 +126,6 @@ Requires:  php-tokenizer
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
-# phpcompatinfo: Bundled packages
-Requires:  php-fileinfo
-Requires:  php-filter
-Requires:  php-posix
-Requires:  php-tidy
 
 # Virtual provides
 ## Core
@@ -241,88 +233,60 @@ Requires: PyYAML
 
 pushd drupal-%{git_commit_short}
 
+# Apply patches
+#%patch0
+
 # Remove unneeded files
 find . -name '.git*' -delete
-rm -f web.config example.gitignore
+rm -f web.config core/vendor/composer/installed.json
 
 # Change PHP minimum version per previous statement regarding min PHP version
-sed 's/5.3.10/5.3.3/' -i core/includes/bootstrap.inc
+# !!!!!!!!!!!!!!!!!!! REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!
+sed 's/5.3.10/5.3.3/' \
+    -i core/includes/bootstrap.inc \
+    -i core/install.php \
+    -i core/update.php
 
-# Symlink vendors (bundled libraries)
-# TODO: Not all removed because some are not available as separate packages yet
-#       (see TODO's in "Requires: " above)
-#
-# It would be nice to be able to just symlink the entire vendor directory to a
-# global Composer vendor directory kind of like the nodejs/npm packages do for
-# node_modules... :) :) :)
-# (see https://github.com/siwinski/php-composer-rpms)
-#
-# doctrine/common
-# core/vendor/doctrine/common/lib/Doctrine/Common -> /usr/share/pear/Doctrine/Common
-#rm -rf core/vendor/doctrine
-#mkdir -p -m 755 core/vendor/doctrine/common/lib/Doctrine
-#ln -s %{_datadir}/pear/Doctrine/Common core/vendor/doctrine/common/lib/Doctrine/Common
-#
-# easyrdf/easyrdf
-# core/vendor/easyrdf/easyrdf/lib/EasyRdf.php -> /usr/share/php/EasyRdf.php
-# core/vendor/easyrdf/easyrdf/lib/EasyRdf -> /usr/share/php/EasyRdf
-#rm -rf core/vendor/easyrdf
-#mkdir -p -m 755 core/vendor/easyrdf/easyrdf/lib
-#ln -s %{_datadir}/php/EasyRdf.php core/vendor/easyrdf/easyrdf/lib/EasyRdf.php
-#ln -s %{_datadir}/php/EasyRdf core/vendor/easyrdf/easyrdf/lib/EasyRdf
-#
-# guzzle/http
-# guzzle/* (some additional pkgs installed as dependencies for guzzle/http)
-# Lazy-symlinking here (symlink to base Guzzle path instead individual components)
-# core/vendor/guzzle/*/Guzzle -> /usr/share/pear/Guzzle
-for GUZZLE_COMPONENT in core/vendor/guzzle/*; do
-    rm -rf $GUZZLE_COMPONENT/*
-    ln -s %{_datadir}/pear/Guzzle $GUZZLE_COMPONENT/Guzzle
-done
-#
-# kriswallsmith/assetic
-rm -rf core/vendor/kriswallsmith/assetic/*
-mkdir -p -m 0755 core/vendor/kriswallsmith/assetic/src
-ln -s %{_datadir}/php/Assetic core/vendor/kriswallsmith/assetic/src/Assetic
-ln -s Assetic/functions.php core/vendor/kriswallsmith/assetic/src/functions.php
-#
-# phpunit/*
-# Lazy-symlinking
-for PHPUNIT_COMPONENT in core/vendor/phpunit/*; do
-    rm -rf $PHPUNIT_COMPONENT
-    ln -s %{pear_phpdir} $PHPUNIT_COMPONENT
+# Fix php bin
+sed 's#/bin/php#/usr/bin/php#' -i core/scripts/update-countries.sh
+
+# Set Composer autoload to use include path
+sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$loader->register(true);#' \
+    -i core/vendor/composer/autoload_real.php
+
+# Fix Composer autoload classmap
+# NOTE: SessionHandlerInterface is required for PHP < 5.4.0
+#       http://php.net/manual/en/class.sessionhandlerinterface.php
+sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
+    -i core/vendor/composer/autoload_classmap.php
+
+# Fix Composer autoload files
+sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
+    -i core/vendor/composer/autoload_files.php
+
+# Remove bundled Composer libraries
+for BUNDLED_LIBRARY in guzzle kriswallsmith phpunit psr sdboyer symfony symfony-cmf zendframework
+do
+    # Bundled library itself
+    rm -rf "core/vendor/${BUNDLED_LIBRARY}"
+
+    # Autoloader class map, namespaces, and include paths
+    sed "/\$vendorDir\s*.\s*'\/${BUNDLED_LIBRARY}\//d" \
+        -i core/vendor/composer/autoload_classmap.php \
+        -i core/vendor/composer/autoload_namespaces.php \
+        -i core/vendor/composer/include_paths.php
 done
 rm -f core/vendor/bin/phpunit
-ln -s %{_bindir}/phpunit core/vendor/bin/phpunit
-#
-# symfony/*
-# Lazy-symlinking here (symlink to base Symfony path instead individual components)
-# core/vendor/symfony/*/Symfony -> /usr/share/pear/Symfony
-#for SYMFONY_COMPONENT in core/vendor/symfony/*; do
-#    rm -rf $SYMFONY_COMPONENT/*
-#    ln -s %{_datadir}/pear/Symfony $SYMFONY_COMPONENT/Symfony
-#done
-#
-# symfony-cmf/routing
-#rm -rf core/vendor/symfony-cmf/routing/Symfony
-#ln -s %{_datadir}/php/Symfony core/vendor/symfony-cmf/routing/Symfony
-#
-# twig/twig
-# core/vendor/twig/twig/lib/Twig -> /usr/share/pear/Twig
-#rm -rf core/vendor/twig
-#mkdir -p -m 755 core/vendor/twig/twig/lib
-#ln -s %{_datadir}/pear/Twig core/vendor/twig/twig/lib/Twig
-#
-# core/vendor/psr/log/Psr -> /usr/share/php/Psr
-rm -rf core/vendor/psr/log/*
-ln -s %{_datadir}/php/Psr core/vendor/psr/log/Psr
 
 popd
 
+# RPM "magic"
 cp -p %{SOURCE1} .
 cp -p %{SOURCE2} .
 cp -p %{SOURCE3} .
 cp -p %{SOURCE4} .
+
+# Apache HTTPD conf
 cp -p %{SOURCE5} .
 
 # Update macros' version and base path
@@ -373,31 +337,28 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %doc drupal-%{git_commit_short}/README.txt
 %doc drupal-%{git_commit_short}/composer.*
 %doc drupal-%{git_commit_short}/core/*.txt
-%doc drupal-%{git_commit_short}/modules/README.txt
-%doc drupal-%{git_commit_short}/profiles/README.txt
-%doc drupal-%{git_commit_short}/themes/README.txt
+%doc drupal-%{git_commit_short}/example.*
 %dir %{drupal8}
      %{drupal8}/.htaccess
      %{drupal8}/*.*
      %{drupal8}/core
 %dir %{drupal8}/modules
+     %{drupal8}/modules/README.txt
 %dir %{drupal8}/profiles
+     %{drupal8}/profiles/README.txt
      %{drupal8}/sites
 %dir %{drupal8}/themes
+     %{drupal8}/themes/README.txt
 %exclude %{drupal8}/README.txt
 %exclude %{drupal8}/composer.*
 %exclude %{drupal8}/core/*.txt
-%exclude %{drupal8}/modules/README.txt
-%exclude %{drupal8}/profiles/README.txt
-%exclude %{drupal8}/themes/README.txt
+%exclude %{drupal8}/example.*
 # Sites
-%doc drupal-%{git_commit_short}/sites/README.txt
-%doc drupal-%{git_commit_short}/sites/example.sites.php
 %dir     %{_sysconfdir}/%{name}
 %dir     %{_sysconfdir}/%{name}/default
 %config  %{_sysconfdir}/%{name}/default/default.settings.php
-%exclude %{_sysconfdir}/%{name}/README.txt
-%exclude %{_sysconfdir}/%{name}/example.sites.php
+%exclude %{_sysconfdir}/%{name}/*.txt
+%exclude %{_sysconfdir}/%{name}/example.*
 # Files
 %{_sysconfdir}/%{name}/default/files
 %dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}
