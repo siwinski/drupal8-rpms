@@ -2,7 +2,7 @@
 
 %global git_commit       c478bf4062e910357c2dd89c9dd069ffd2d959a2
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_release      alpha7
+%global git_release      .alpha7
 
 %global drupal8          %{_datadir}/drupal8
 
@@ -40,7 +40,7 @@
 
 Name:      drupal8
 Version:   8.0
-Release:   0.9.%{git_release}%{?dist}
+Release:   0.9%{?git_release}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -237,6 +237,10 @@ pushd drupal-%{git_commit_short}
 find . -name '.git*' -delete
 rm -f web.config core/vendor/composer/installed.json
 
+# Apache .htaccess
+sed 's!# RewriteBase /$!# RewriteBase /\n  RewriteBase /drupal8!' \
+    -i .htaccess
+
 # Fix php bin
 sed 's#/bin/php#/usr/bin/php#' -i core/scripts/update-countries.sh
 
@@ -292,9 +296,9 @@ sed -e 's:__DRUPAL8_VERSION__:%version:' \
 %install
 pushd drupal-%{git_commit_short}
 
+# Main
 mkdir -pm 755 %{buildroot}%{drupal8}
 cp -pr * %{buildroot}%{drupal8}/
-cp -p .htaccess %{buildroot}%{drupal8}/
 
 # Sites
 mkdir -pm 0755 %{buildroot}%{_sysconfdir}/%{name}
@@ -308,6 +312,11 @@ ln -s %{_localstatedir}/lib/%{name}/public/default \
       %{buildroot}%{_sysconfdir}/%{name}/default/files
 ln -s public %{buildroot}%{_localstatedir}/lib/%{name}/files
 
+# Apache .htaccess
+mkdir -pm 0755 %{buildroot}%{_sysconfdir}/httpd/conf.d
+install -pm 0644 .htaccess %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.htaccess
+ln -s %{_sysconfdir}/httpd/conf.d/%{name}.htaccess %{buildroot}%{drupal8}/.htaccess
+
 popd
 
 # RPM "magic"
@@ -319,8 +328,15 @@ install -pm 0755 %{name}.prov %{buildroot}%{_rpmconfigdir}/
 install -pm 0755 %{name}.req %{buildroot}%{_rpmconfigdir}/
 
 # Apache HTTPD conf
-mkdir -pm 0755 %{buildroot}%{_sysconfdir}/httpd/conf.d
 install -pm 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
+
+
+%check
+# Ensure RewriteBase
+grep 'RewriteBase /drupal8' \
+         %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.htaccess \
+         --quiet \
+     || exit 1
 
 
 %files
@@ -352,14 +368,15 @@ install -pm 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %exclude %{_sysconfdir}/%{name}/example.*
 # Files
 %{_sysconfdir}/%{name}/default/files
-%dir                        %{_localstatedir}/lib/%{name}
-                            %{_localstatedir}/lib/%{name}/files
-%dir                        %{_localstatedir}/lib/%{name}/private
+%dir                         %{_localstatedir}/lib/%{name}
+                             %{_localstatedir}/lib/%{name}/files
+%dir                         %{_localstatedir}/lib/%{name}/private
 %dir %attr(0775,root,apache) %{_localstatedir}/lib/%{name}/private/default
-%dir                        %{_localstatedir}/lib/%{name}/public
+%dir                         %{_localstatedir}/lib/%{name}/public
 %dir %attr(0775,root,apache) %{_localstatedir}/lib/%{name}/public/default
-# Apache HTTPD conf
+# Apache
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.htaccess
 
 %files rpmbuild
 %{_sysconfdir}/rpm/macros.%{name}
@@ -369,7 +386,7 @@ install -pm 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
-* Sun Jan 13 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
+* Sun Jan 12 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
 - Updated to release tag 8.0-alpha7
 
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
