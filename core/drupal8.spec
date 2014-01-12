@@ -45,7 +45,7 @@ Summary:   An open source content management platform
 
 Group:     Applications/Publishing
 License:   GPLv2+
-URL:       http://drupal.org/community-initiatives/drupal-core
+URL:       https://drupal.org/drupal-8.0
 Source0:   http://drupalcode.org/project/drupal.git/snapshot/%{git_commit}.tar.gz
 # RPM "magic"
 Source1:   macros.%{name}
