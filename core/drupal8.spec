@@ -388,6 +388,15 @@ grep 'RewriteBase /drupal8' \
 %changelog
 * Sun Jan 12 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
 - Updated to release tag 8.0-alpha7
+- Updated URL
+- Moved .htaccess file to Apache conf dir
+- Fixed Apache conf file
+- Removed PSR Log dependency (dependencies pull this in)
+- Unbundle EasyRDF, Gliph, Symfony, Zend Framework 2 Feed
+- Added specific file requires to make sure broken dependency if providing
+  pkg moves file
+- Keep modules, profiles, and themes README files in directories
+- Unbundling now uses autoloader instead of symlinks
 
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
