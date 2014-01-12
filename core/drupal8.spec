@@ -1,15 +1,16 @@
 # See WARNING notes in %%description
 
-%global git_commit       172cd2652a6d938f732970dcafdd751155f53236
+%global git_commit       c478bf4062e910357c2dd89c9dd069ffd2d959a2
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_release      alpha6
+%global git_release      alpha7
 
 %global drupal8          %{_datadir}/drupal8
 
 # "kriswallsmith/assetic": "1.1.*@alpha"
 %global assetic_min_ver             1.1.0
 %global assetic_max_ver             1.2.0
-# "doctrine/common": "2.4.*@beta"
+# "doctrine/common": "dev-bmaster#99b44f52a1b844f9c4c34e618b160664d5c27daf",
+# "doctrine/annotations": "dev-master#463d926a8dcc49271cb7db5a08364a70ed6e3cd3"
 %global doctrine_min_ver            2.4.0
 %global doctrine_max_ver            2.5.0
 # "easyrdf/easyrdf": "0.8.*@beta"
@@ -63,8 +64,8 @@ Requires:  php >= 5.3
 
 Requires:  php-Assetic                     >= %{assetic_min_ver}
 Requires:  php-Assetic                     <  %{assetic_max_ver}
-#Requires:  php-EasyRdf                     >= %{easyrdf_min_ver}
-#Requires:  php-EasyRdf                     <  %{easyrdf_max_ver}
+Requires:  php-EasyRdf                     >= %{easyrdf_min_ver}
+Requires:  php-EasyRdf                     <  %{easyrdf_max_ver}
 Requires:  php-gliph                       >= %{gliph_min_ver}
 Requires:  php-gliph                       <  %{gliph_max_ver}
 Requires:  php-symfony-classloader         >= %{symfony_min_ver}
@@ -89,14 +90,14 @@ Requires:  php-SymfonyCmfRouting           >= %{symfony_cmf_routing_min_ver}
 Requires:  php-SymfonyCmfRouting           <  %{symfony_cmf_routing_max_ver}
 Requires:  php-ZendFramework2-Feed         >= %{zendframework_min_ver}
 Requires:  php-ZendFramework2-Feed         <  %{zendframework_max_ver}
-#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) >= %{doctrine_min_ver}
-#Requires:  php-pear(pear.doctrine-project.org/DoctrineCommon) <  %{doctrine_max_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig)               >= %{twig_min_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig)               <  %{twig_max_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle)                >= %{guzzle_min_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle)                <  %{guzzle_max_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit)                  >= %{phpunit_min_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit)                  <  %{phpunit_max_ver}
+#Requires:  php-doctrine-common             >= %{doctrine_min_ver}
+#Requires:  php-doctrine-common             <  %{doctrine_max_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
+#Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle)  >= %{guzzle_min_ver}
+Requires:  php-pear(guzzlephp.org/pear/Guzzle)  <  %{guzzle_max_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit)    >= %{phpunit_min_ver}
+Requires:  php-pear(pear.phpunit.de/PHPUnit)    <  %{phpunit_max_ver}
 # phpcompatinfo
 Requires:  php-bz2
 Requires:  php-core
@@ -126,6 +127,8 @@ Requires:  php-tokenizer
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
+# Specific files to make sure broken dependency if providing pkg moves file
+Requires:  %{_datadir}/php/Assetic/functions.php
 
 # Virtual provides
 ## Core
@@ -257,15 +260,15 @@ sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$l
 # Fix Composer autoload classmap
 # NOTE: SessionHandlerInterface is required for PHP < 5.4.0
 #       http://php.net/manual/en/class.sessionhandlerinterface.php
-sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
-    -i core/vendor/composer/autoload_classmap.php
+#sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
+#    -i core/vendor/composer/autoload_classmap.php
 
 # Fix Composer autoload files
 sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
     -i core/vendor/composer/autoload_files.php
 
 # Remove bundled Composer libraries
-for BUNDLED_LIBRARY in guzzle kriswallsmith phpunit psr sdboyer symfony symfony-cmf zendframework
+for BUNDLED_LIBRARY in easyrdf guzzle kriswallsmith phpunit psr sdboyer symfony symfony-cmf zendframework
 do
     # Bundled library itself
     rm -rf "core/vendor/${BUNDLED_LIBRARY}"
@@ -302,34 +305,35 @@ sed -e 's:__DRUPAL8_VERSION__:%version:' \
 %install
 pushd drupal-%{git_commit_short}
 
-mkdir -p -m 755 %{buildroot}%{drupal8}
+mkdir -pm 755 %{buildroot}%{drupal8}
 cp -pr * %{buildroot}%{drupal8}/
 cp -p .htaccess %{buildroot}%{drupal8}/
 
 # Sites
-mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+mkdir -pm 0755 %{buildroot}%{_sysconfdir}/%{name}
 mv %{buildroot}%{drupal8}/sites/* %{buildroot}%{_sysconfdir}/%{name}/
 rmdir %{buildroot}%{drupal8}/sites
 ln -s %{_sysconfdir}/%{name} %{buildroot}%{drupal8}/sites
 
 # Files
-mkdir -p -m 0755 %{buildroot}%{_localstatedir}/lib/%{name}/files/default
-ln -s %{_localstatedir}/lib/%{name}/files/default \
+mkdir -pm 0755 %{buildroot}%{_localstatedir}/lib/%{name}/{public,private}/default
+ln -s %{_localstatedir}/lib/%{name}/public/default \
       %{buildroot}%{_sysconfdir}/%{name}/default/files
+ln -s public %{buildroot}%{_localstatedir}/lib/%{name}/files
 
 popd
 
 # RPM "magic"
-mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/rpm
-install -p -m 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/
-mkdir -p -m 0755 %{buildroot}%{_rpmconfigdir}/fileattrs
-install -p -m 0644 %{name}.attr %{buildroot}%{_rpmconfigdir}/fileattrs/
-install -p -m 0755 %{name}.prov %{buildroot}%{_rpmconfigdir}/
-install -p -m 0755 %{name}.req %{buildroot}%{_rpmconfigdir}/
+mkdir -pm 0755 %{buildroot}%{_sysconfdir}/rpm
+install -pm 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/
+mkdir -pm 0755 %{buildroot}%{_rpmconfigdir}/fileattrs
+install -pm 0644 %{name}.attr %{buildroot}%{_rpmconfigdir}/fileattrs/
+install -pm 0755 %{name}.prov %{buildroot}%{_rpmconfigdir}/
+install -pm 0755 %{name}.req %{buildroot}%{_rpmconfigdir}/
 
 # Apache HTTPD conf
-mkdir -p -m 0755 %{buildroot}%{_sysconfdir}/httpd/conf.d
-install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
+mkdir -pm 0755 %{buildroot}%{_sysconfdir}/httpd/conf.d
+install -pm 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %files
@@ -361,9 +365,12 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %exclude %{_sysconfdir}/%{name}/example.*
 # Files
 %{_sysconfdir}/%{name}/default/files
-%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}
-%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}/files
-%dir %attr(775,root,apache) %{_localstatedir}/lib/%{name}/files/default
+%dir                        %{_localstatedir}/lib/%{name}
+                            %{_localstatedir}/lib/%{name}/files
+%dir                        %{_localstatedir}/lib/%{name}/private
+%dir %attr(0775,root,apache) %{_localstatedir}/lib/%{name}/private/default
+%dir                        %{_localstatedir}/lib/%{name}/public
+%dir %attr(0775,root,apache) %{_localstatedir}/lib/%{name}/public/default
 # Apache HTTPD conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 
@@ -375,6 +382,9 @@ install -p -m 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 
 
 %changelog
+* Sun Jan 13 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
+- Updated to release tag 8.0-alpha7
+
 * Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
 - Require correct min PHP version 5.3.10 instead of 5.3.3
