@@ -54,13 +54,10 @@ Source3:   %{name}.prov
 Source4:   %{name}.req
 # Apache HTTPD conf
 Source5:   %{name}.conf
-# Set auto-loader to use include path so bundled libraries can simply be removed
-#Patch0:    ${name}-autoload-use-include-path.patch
 
 BuildArch: noarch
 
-#Requires:  php >= 5.3.10
-Requires:  php >= 5.3
+Requires:  php >= 5.3.10
 
 Requires:  php-Assetic                     >= %{assetic_min_ver}
 Requires:  php-Assetic                     <  %{assetic_max_ver}
@@ -236,19 +233,9 @@ Requires: PyYAML
 
 pushd drupal-%{git_commit_short}
 
-# Apply patches
-#%patch0
-
 # Remove unneeded files
 find . -name '.git*' -delete
 rm -f web.config core/vendor/composer/installed.json
-
-# Change PHP minimum version per previous statement regarding min PHP version
-# !!!!!!!!!!!!!!!!!!! REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!
-sed 's/5.3.10/5.3.3/' \
-    -i core/includes/bootstrap.inc \
-    -i core/install.php \
-    -i core/update.php
 
 # Fix php bin
 sed 's#/bin/php#/usr/bin/php#' -i core/scripts/update-countries.sh
@@ -260,8 +247,8 @@ sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$l
 # Fix Composer autoload classmap
 # NOTE: SessionHandlerInterface is required for PHP < 5.4.0
 #       http://php.net/manual/en/class.sessionhandlerinterface.php
-#sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
-#    -i core/vendor/composer/autoload_classmap.php
+sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
+    -i core/vendor/composer/autoload_classmap.php
 
 # Fix Composer autoload files
 sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
