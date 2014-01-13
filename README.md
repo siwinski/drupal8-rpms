@@ -11,6 +11,6 @@ Fedora Drafts
 Fedora Dev Repos
 ----------------
 * [Fedora Copr](http://copr.fedoraproject.org/coprs/siwinski/drupal8/)
-** [Fedora 19](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-19-i386/)
-** [Fedora 20](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-20-i386/)
-** [Fedora rawhide] (http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-rawhide-i386/)
+  * [Fedora 19](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-19-i386/)
+  * [Fedora 20](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-20-i386/)
+  * [Fedora rawhide] (http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-rawhide-i386/)
