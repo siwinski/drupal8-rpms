@@ -3,6 +3,35 @@ Fedora Drupal 8 Dev RPMs
 
 *** **WARNING: These are just a development RPMs.  Please submit issues at <https://github.com/siwinski/drupal8-rpms/issues> and prefix your issue title with "[%{name}] " -- ex: "[drupal8] ", "[drupal8-devel] ", "[drupal8-token] "** ***
 
+Core TODO
+---------
+* Dependencies requiring update:
+  * [php-doctrine-annotations](https://admin.fedoraproject.org/pkgdb/package/php-doctrine-annotations/)
+  * [php-doctrine-common](https://admin.fedoraproject.org/pkgdb/package/php-doctrine-common/)
+* Unbundle libraries
+  * Composer
+    * Guzzle 4 (core/vendor/guzzlehttp)
+  * Modules
+    * [CKEditor](https://admin.fedoraproject.org/pkgdb/package/ckeditor/) (core/modules/ckeditor)
+  * JavaScript/CSS (core/core.libraries.yml; core/assets/vendor/*)
+    * backbone
+    * classList
+    * farbtastic
+    * jquery
+    * jquery-form
+    * jquery-once
+    * jquery-ui-touch-punch
+    * normalize-css
+    * underscore
+    * [ckeditor](https://admin.fedoraproject.org/pkgdb/package/ckeditor/)
+    * domready
+    * html5shiv
+    * jquery.cookie
+    * jquery-joyride
+    * jquery.ui
+    * modernizr
+    * picturefill
+
 Fedora Drafts
 -------------
 * [Packaging Guidelines](https://fedoraproject.org/wiki/User:Siwinski/Draft:Packaging:Drupal8)

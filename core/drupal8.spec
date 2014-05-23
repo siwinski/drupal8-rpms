@@ -1,52 +1,65 @@
+# See https://github.com/siwinski/drupal8-rpms (see README.md for TODOs)
 # See WARNING notes in %%description
 
-%global git_commit       c478bf4062e910357c2dd89c9dd069ffd2d959a2
+# Disable automatic dependency processing
+AutoReqProv: no
+
+%global git_commit       c39598105fded28f7bfedc78734c1ccde9a9bc9e
 %global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_release      .alpha7
+%global git_prerelease   alpha11
 
-%global drupal8          %{_datadir}/drupal8
+# "php": ">=5.4.2" (composer.json)
+#%%global php_min_ver 5.4.2
+# DEBUG ONLY!
+%global php_min_ver 5.3
 
-# "kriswallsmith/assetic": "1.1.*@alpha"
-%global assetic_min_ver             1.1.0
-%global assetic_max_ver             1.2.0
-# "doctrine/common": "dev-bmaster#99b44f52a1b844f9c4c34e618b160664d5c27daf",
-# "doctrine/annotations": "dev-master#463d926a8dcc49271cb7db5a08364a70ed6e3cd3"
-%global doctrine_min_ver            2.4.0
-%global doctrine_max_ver            2.5.0
-# "easyrdf/easyrdf": "0.8.*@beta"
-%global easyrdf_min_ver             0.8.0
-%global easyrdf_max_ver             0.9.0
-# "sdboyer/gliph": "0.1.*"
-%global gliph_min_ver               0.1.0
-%global gliph_max_ver               0.2.0
-# "guzzle/http": "3.7.*"
-%global guzzle_min_ver              3.7.0
-%global guzzle_max_ver              3.8.0
-# "phpunit/phpunit": "3.7.*"
-%global phpunit_min_ver             3.7.0
-%global phpunit_max_ver             3.8.0
-# "symfony/*": "2.3.*"
-%global symfony_min_ver             2.3.0
-%global symfony_max_ver             2.4.0
-# "symfony-cmf/routing": "1.1.*@alpha"
+# "kriswallsmith/assetic": "1.1.*@alpha" (composer.json)
+%global assetic_min_ver 1.1.0
+%global assetic_max_ver 1.2.0
+# "doctrine/annotations": "dev-master#463d926a8dcc49271cb7db5a08364a70ed6e3cd3" (composer.json)
+# TODO: php-doctrine-annotations needs to be updated to include this commit
+%global doctrine_annotations_min_ver 1.1.2
+%global doctrine_annotations_max_ver 2.0
+# "doctrine/common": "dev-bmaster#a45d110f71c323e29f41eb0696fa230e3fa1b1b5" (composer.json)
+# TODO: php-doctrine-common needs to be updated to include this commit
+%global doctrine_common_min_ver 2.4.0
+%global doctrine_common_max_ver 2.5.0
+# "easyrdf/easyrdf": "0.8.*" (composer.json)
+%global easyrdf_min_ver 0.8.0
+%global easyrdf_max_ver 0.9.0
+# "sdboyer/gliph": "0.1.*" (composer.json)
+%global gliph_min_ver 0.1.0
+%global gliph_max_ver 0.2.0
+# "guzzlehttp/guzzle": "4.0.*" (composer.json)
+%global guzzle_min_ver 4.0
+%global guzzle_max_ver 4.1
+# "symfony/*": "2.4.*" (composer.json)
+%global symfony_min_ver 2.3.0
+%global symfony_max_ver 2.4.0
+# "symfony-cmf/routing": "1.1.*@alpha" (composer.json)
 %global symfony_cmf_routing_min_ver 1.1.0
 %global symfony_cmf_routing_max_ver 1.2.0
-# "twig/twig": "1.12.*"
-%global twig_min_ver                1.12.0
-%global twig_max_ver                1.13.0
-# "zendframework/zend-feed": "2.2.*"
-%global zendframework_min_ver       2.2.0
-%global zendframework_max_ver       2.3.0
+# "twig/twig": "1.15.*" (composer.json)
+%global twig_min_ver 1.15.0
+%global twig_max_ver 1.16.0
+# "zendframework/zend-feed": "2.2.*" (composer.json)
+%global zendframework_min_ver 2.2.0
+%global zendframework_max_ver 2.3.0
+
+%global drupal8     %{_datadir}/drupal8
+%global macrosdir   %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
+%global source0_dir drupal-%{version}%{?git_prerelease:-%{git_prerelease}}
+
 
 Name:      drupal8
 Version:   8.0
-Release:   0.9%{?git_release}%{?dist}
+Release:   0.10%{?git_prerelease:.%{git_prerelease}}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
 License:   GPLv2+
 URL:       https://drupal.org/drupal-8.0
-Source0:   http://drupalcode.org/project/drupal.git/snapshot/%{git_commit}.tar.gz
+Source0:   http://ftp.drupal.org/files/projects/drupal-%{version}%{?git_prerelease:-%{git_prerelease}}.tar.gz
 # RPM "magic"
 Source1:   macros.%{name}
 Source2:   %{name}.attr
@@ -57,47 +70,50 @@ Source5:   %{name}.conf
 
 BuildArch: noarch
 
-Requires:  php >= 5.3.10
+Requires:  php(language) >= %{php_min_ver}
+Requires:  httpd
+Requires:  mod_php
 
-Requires:  php-Assetic                     >= %{assetic_min_ver}
-Requires:  php-Assetic                     <  %{assetic_max_ver}
-Requires:  php-EasyRdf                     >= %{easyrdf_min_ver}
-Requires:  php-EasyRdf                     <  %{easyrdf_max_ver}
-Requires:  php-gliph                       >= %{gliph_min_ver}
-Requires:  php-gliph                       <  %{gliph_max_ver}
-Requires:  php-symfony-classloader         >= %{symfony_min_ver}
-Requires:  php-symfony-classloader         <  %{symfony_max_ver}
-Requires:  php-symfony-dependencyinjection >= %{symfony_min_ver}
-Requires:  php-symfony-dependencyinjection <  %{symfony_max_ver}
-Requires:  php-symfony-eventdispatcher     >= %{symfony_min_ver}
-Requires:  php-symfony-eventdispatcher     <  %{symfony_max_ver}
-Requires:  php-symfony-httpfoundation      >= %{symfony_min_ver}
-Requires:  php-symfony-httpfoundation      <  %{symfony_max_ver}
-Requires:  php-symfony-httpkernel          >= %{symfony_min_ver}
-Requires:  php-symfony-httpkernel          <  %{symfony_max_ver}
-Requires:  php-symfony-routing             >= %{symfony_min_ver}
-Requires:  php-symfony-routing             <  %{symfony_max_ver}
-Requires:  php-symfony-serializer          >= %{symfony_min_ver}
-Requires:  php-symfony-serializer          <  %{symfony_max_ver}
-Requires:  php-symfony-validator           >= %{symfony_min_ver}
-Requires:  php-symfony-validator           <  %{symfony_max_ver}
-Requires:  php-symfony-yaml                >= %{symfony_min_ver}
-Requires:  php-symfony-yaml                <  %{symfony_max_ver}
-Requires:  php-SymfonyCmfRouting           >= %{symfony_cmf_routing_min_ver}
-Requires:  php-SymfonyCmfRouting           <  %{symfony_cmf_routing_max_ver}
-Requires:  php-ZendFramework2-Feed         >= %{zendframework_min_ver}
-Requires:  php-ZendFramework2-Feed         <  %{zendframework_max_ver}
-#Requires:  php-doctrine-common             >= %{doctrine_min_ver}
-#Requires:  php-doctrine-common             <  %{doctrine_max_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
-#Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle)  >= %{guzzle_min_ver}
-Requires:  php-pear(guzzlephp.org/pear/Guzzle)  <  %{guzzle_max_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit)    >= %{phpunit_min_ver}
-Requires:  php-pear(pear.phpunit.de/PHPUnit)    <  %{phpunit_max_ver}
-# phpcompatinfo
+Requires:  php-Assetic                          >= %{assetic_min_ver}
+Requires:  php-Assetic                          <  %{assetic_max_ver}
+Requires:  php-doctrine-annotations             >= %{doctrine_annotations_min_ver}
+Requires:  php-doctrine-annotations             <  %{doctrine_annotations_max_ver}
+Requires:  php-doctrine-common                  >= %{doctrine_common_min_ver}
+Requires:  php-doctrine-common                  <  %{doctrine_common_max_ver}
+Requires:  php-EasyRdf                          >= %{easyrdf_min_ver}
+Requires:  php-EasyRdf                          <  %{easyrdf_max_ver}
+Requires:  php-gliph                            >= %{gliph_min_ver}
+Requires:  php-gliph                            <  %{gliph_max_ver}
+# TODO (not packaged)
+#Requires:  php-guzzlehttp-guzzle                >= %%{guzzle_min_ver}
+#Requires:  php-guzzlehttp-guzzle                <  %%{guzzle_max_ver}
+Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
+Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
+Requires:  php-phpunit-PHPUnit
+Requires:  php-symfony-classloader              >= %{symfony_min_ver}
+Requires:  php-symfony-classloader              <  %{symfony_max_ver}
+Requires:  php-symfony-dependencyinjection      >= %{symfony_min_ver}
+Requires:  php-symfony-dependencyinjection      <  %{symfony_max_ver}
+Requires:  php-symfony-eventdispatcher          >= %{symfony_min_ver}
+Requires:  php-symfony-eventdispatcher          <  %{symfony_max_ver}
+Requires:  php-symfony-httpfoundation           >= %{symfony_min_ver}
+Requires:  php-symfony-httpfoundation           <  %{symfony_max_ver}
+Requires:  php-symfony-httpkernel               >= %{symfony_min_ver}
+Requires:  php-symfony-httpkernel               <  %{symfony_max_ver}
+Requires:  php-symfony-routing                  >= %{symfony_min_ver}
+Requires:  php-symfony-routing                  <  %{symfony_max_ver}
+Requires:  php-symfony-serializer               >= %{symfony_min_ver}
+Requires:  php-symfony-serializer               <  %{symfony_max_ver}
+Requires:  php-symfony-validator                >= %{symfony_min_ver}
+Requires:  php-symfony-validator                <  %{symfony_max_ver}
+Requires:  php-symfony-yaml                     >= %{symfony_min_ver}
+Requires:  php-symfony-yaml                     <  %{symfony_max_ver}
+Requires:  php-SymfonyCmfRouting                >= %{symfony_cmf_routing_min_ver}
+Requires:  php-SymfonyCmfRouting                <  %{symfony_cmf_routing_max_ver}
+Requires:  php-ZendFramework2-Feed              >= %{zendframework_min_ver}
+Requires:  php-ZendFramework2-Feed              <  %{zendframework_max_ver}
+# phpcompatinfo (computed from version 8.0-alpha11)
 Requires:  php-bz2
-Requires:  php-core
 Requires:  php-ctype
 Requires:  php-curl
 Requires:  php-date
@@ -119,7 +135,6 @@ Requires:  php-reflection
 Requires:  php-session
 Requires:  php-simplexml
 Requires:  php-spl
-Requires:  php-standard
 Requires:  php-tokenizer
 Requires:  php-xml
 Requires:  php-zip
@@ -129,94 +144,95 @@ Requires:  %{_datadir}/php/Assetic/functions.php
 
 # Virtual provides
 ## Core
-Provides:  drupal8(core)               = %{version}
+Provides:  drupal8(core)                = %{version}
 ## Modules
-Provides:  drupal8(action)             = %{version}
-Provides:  drupal8(aggregator)         = %{version}
-Provides:  drupal8(ban)                = %{version}
-Provides:  drupal8(block)              = %{version}
-Provides:  drupal8(book)               = %{version}
-Provides:  drupal8(breakpoint)         = %{version}
-Provides:  drupal8(ckeditor)           = %{version}
-Provides:  drupal8(color)              = %{version}
-Provides:  drupal8(comment)            = %{version}
-Provides:  drupal8(config)             = %{version}
-Provides:  drupal8(contact)            = %{version}
-Provides:  drupal8(contextual)         = %{version}
-Provides:  drupal8(custom_block)       = %{version}
-Provides:  drupal8(datetime)           = %{version}
-Provides:  drupal8(dblog)              = %{version}
-Provides:  drupal8(edit)               = %{version}
-Provides:  drupal8(editor)             = %{version}
-Provides:  drupal8(email)              = %{version}
-Provides:  drupal8(entity)             = %{version}
-Provides:  drupal8(entity_reference)   = %{version}
-Provides:  drupal8(field)              = %{version}
-Provides:  drupal8(field_sql_storage)  = %{version}
-Provides:  drupal8(field_ui)           = %{version}
-Provides:  drupal8(file)               = %{version}
-Provides:  drupal8(filter)             = %{version}
-Provides:  drupal8(forum)              = %{version}
-Provides:  drupal8(hal)                = %{version}
-Provides:  drupal8(help)               = %{version}
-Provides:  drupal8(history)            = %{version}
-Provides:  drupal8(image)              = %{version}
-Provides:  drupal8(language)           = %{version}
-Provides:  drupal8(layout)             = %{version}
-Provides:  drupal8(link)               = %{version}
-Provides:  drupal8(locale)             = %{version}
-Provides:  drupal8(menu)               = %{version}
-Provides:  drupal8(menu_link)          = %{version}
-Provides:  drupal8(node)               = %{version}
-Provides:  drupal8(number)             = %{version}
-Provides:  drupal8(options)            = %{version}
-Provides:  drupal8(overlay)            = %{version}
-Provides:  drupal8(path)               = %{version}
-Provides:  drupal8(php)                = %{version}
-Provides:  drupal8(picture)            = %{version}
-Provides:  drupal8(rdf)                = %{version}
-Provides:  drupal8(rest)               = %{version}
-Provides:  drupal8(search)             = %{version}
-Provides:  drupal8(serialization)      = %{version}
-Provides:  drupal8(shortcut)           = %{version}
-Provides:  drupal8(simpletest)         = %{version}
-Provides:  drupal8(statistics)         = %{version}
-Provides:  drupal8(syslog)             = %{version}
-Provides:  drupal8(system)             = %{version}
-Provides:  drupal8(taxonomy)           = %{version}
-Provides:  drupal8(telephone)          = %{version}
-Provides:  drupal8(text)               = %{version}
-Provides:  drupal8(toolbar)            = %{version}
-Provides:  drupal8(tour)               = %{version}
-Provides:  drupal8(tracker)            = %{version}
-Provides:  drupal8(translation_entity) = %{version}
-Provides:  drupal8(update)             = %{version}
-Provides:  drupal8(user)               = %{version}
-Provides:  drupal8(views)              = %{version}
-Provides:  drupal8(views_ui)           = %{version}
-Provides:  drupal8(xmlrpc)             = %{version}
+Provides:  drupal8(action)              = %{version}
+Provides:  drupal8(aggregator)          = %{version}
+Provides:  drupal8(ban)                 = %{version}
+Provides:  drupal8(basic_auth)          = %{version}
+Provides:  drupal8(block)               = %{version}
+Provides:  drupal8(book)                = %{version}
+Provides:  drupal8(breakpoint)          = %{version}
+Provides:  drupal8(ckeditor)            = %{version}
+Provides:  drupal8(color)               = %{version}
+Provides:  drupal8(comment)             = %{version}
+Provides:  drupal8(config)              = %{version}
+Provides:  drupal8(config_translation)  = %{version}
+Provides:  drupal8(contact)             = %{version}
+Provides:  drupal8(content_translation) = %{version}
+Provides:  drupal8(contextual)          = %{version}
+Provides:  drupal8(custom_block)        = %{version}
+Provides:  drupal8(datetime)            = %{version}
+Provides:  drupal8(dblog)               = %{version}
+Provides:  drupal8(editor)              = %{version}
+Provides:  drupal8(entity)              = %{version}
+Provides:  drupal8(entity_reference)    = %{version}
+Provides:  drupal8(field)               = %{version}
+Provides:  drupal8(field_ui)            = %{version}
+Provides:  drupal8(file)                = %{version}
+Provides:  drupal8(filter)              = %{version}
+Provides:  drupal8(forum)               = %{version}
+Provides:  drupal8(hal)                 = %{version}
+Provides:  drupal8(help)                = %{version}
+Provides:  drupal8(history)             = %{version}
+Provides:  drupal8(image)               = %{version}
+Provides:  drupal8(language)            = %{version}
+Provides:  drupal8(link)                = %{version}
+Provides:  drupal8(locale)              = %{version}
+Provides:  drupal8(menu_link)           = %{version}
+Provides:  drupal8(menu_ui)             = %{version}
+Provides:  drupal8(migrate)             = %{version}
+Provides:  drupal8(migrate_drupal)      = %{version}
+Provides:  drupal8(node)                = %{version}
+Provides:  drupal8(options)             = %{version}
+Provides:  drupal8(path)                = %{version}
+Provides:  drupal8(quickedit)           = %{version}
+Provides:  drupal8(rdf)                 = %{version}
+Provides:  drupal8(responsive_image)    = %{version}
+Provides:  drupal8(rest)                = %{version}
+Provides:  drupal8(search)              = %{version}
+Provides:  drupal8(serialization)       = %{version}
+Provides:  drupal8(shortcut)            = %{version}
+Provides:  drupal8(simpletest)          = %{version}
+Provides:  drupal8(statistics)          = %{version}
+Provides:  drupal8(syslog)              = %{version}
+Provides:  drupal8(system)              = %{version}
+Provides:  drupal8(taxonomy)            = %{version}
+Provides:  drupal8(telephone)           = %{version}
+Provides:  drupal8(text)                = %{version}
+Provides:  drupal8(toolbar)             = %{version}
+Provides:  drupal8(tour)                = %{version}
+Provides:  drupal8(tracker)             = %{version}
+Provides:  drupal8(update)              = %{version}
+Provides:  drupal8(user)                = %{version}
+Provides:  drupal8(views)               = %{version}
+Provides:  drupal8(views_ui)            = %{version}
+Provides:  drupal8(xmlrpc)              = %{version}
 ## Themes
-Provides:  drupal8(bartik)             = %{version}
-Provides:  drupal8(seven)              = %{version}
-Provides:  drupal8(stark)              = %{version}
+Provides:  drupal8(bartik)              = %{version}
+Provides:  drupal8(seven)               = %{version}
+Provides:  drupal8(stark)               = %{version}
 ## Profiles
-Provides:  drupal8(minimal)            = %{version}
-Provides:  drupal8(standard)           = %{version}
+Provides:  drupal8(minimal)             = %{version}
+Provides:  drupal8(standard)            = %{version}
 
 %description
 Drupal is an open source content management platform powering millions of
 websites and applications. It’s built, used, and supported by an active and
 diverse community of people around the world.
 
-WARNING: This package uses bundled software because the required versions are
-         not available in Fedora.  When the required versions are available in
-         Fedora this package will be updated to use those.
+WARNING: This package uses bundled software because the required packages or
+         versions are not available in Fedora/EPEL.  When the required packages
+         and/or versions are available in Fedora/EPEL this package will be
+         updated to use those.
 
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
          your issue title with "[%name] ".
 
-Optional: APC (php-pecl-apc)
+Optional:
+* APC (php-pecl-apc)
+* pthreads (http://pecl.php.net/package/pthreads)
 
 
 %package rpmbuild
@@ -231,7 +247,7 @@ Requires: PyYAML
 %prep
 %setup -q -c
 
-pushd drupal-%{git_commit_short}
+pushd %{source0_dir}
 
 # Remove unneeded files
 find . -name '.git*' -delete
@@ -241,25 +257,26 @@ rm -f web.config core/vendor/composer/installed.json
 sed 's!# RewriteBase /$!# RewriteBase /\n  RewriteBase /drupal8!' \
     -i .htaccess
 
-# Fix php bin
-sed 's#/bin/php#/usr/bin/php#' -i core/scripts/update-countries.sh
+# Update php bin
+sed 's#/bin/php#%{_bindir}/php#' \
+    -i core/scripts/switch-psr4.sh \
+    -i core/scripts/update-countries.sh
+
+# Update phpunit bin
+sed -e 's#DRUPAL_ROOT . "/core/vendor/phpunit/phpunit/composer/bin/phpunit"#"%{_bindir}/phpunit"#' \
+    -e 's#DRUPAL_ROOT . "/core/vendor/bin/phpunit"#"%{_bindir}/phpunit"#' \
+    -i core/modules/simpletest/simpletest.module
 
 # Set Composer autoload to use include path
 sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$loader->register(true);#' \
     -i core/vendor/composer/autoload_real.php
-
-# Fix Composer autoload classmap
-# NOTE: SessionHandlerInterface is required for PHP < 5.4.0
-#       http://php.net/manual/en/class.sessionhandlerinterface.php
-sed "/SessionHandlerInterface/s#.*#    'SessionHandlerInterface' => '%{_datadir}/php/Symfony/Component/HttpFoundation/Resources/stubs/SessionHandlerInterface.php',#" \
-    -i core/vendor/composer/autoload_classmap.php
 
 # Fix Composer autoload files
 sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
     -i core/vendor/composer/autoload_files.php
 
 # Remove bundled Composer libraries
-for BUNDLED_LIBRARY in easyrdf guzzle kriswallsmith phpunit psr sdboyer symfony symfony-cmf zendframework
+for BUNDLED_LIBRARY in doctrine easyrdf kriswallsmith phpunit psr sdboyer symfony symfony-cmf twig zendframework
 do
     # Bundled library itself
     rm -rf "core/vendor/${BUNDLED_LIBRARY}"
@@ -271,6 +288,16 @@ do
         -i core/vendor/composer/include_paths.php
 done
 rm -f core/vendor/bin/phpunit
+
+# Fix script-without-shebang
+chmod -x \
+    LICENSE.txt \
+    core/misc/icons/73b355/check.svg \
+    core/misc/icons/e29700/warning.svg \
+    core/misc/icons/ea2800/error.svg \
+    core/modules/ban/lib/Drupal/ban/BanIpManagerInterface.php \
+    core/modules/simpletest/lib/Drupal/simpletest/Tests/SimpleTestTest.php \
+    core/modules/system/lib/Drupal/system/Tests/Database/DeleteTruncateTest.php
 
 popd
 
@@ -294,7 +321,7 @@ sed -e 's:__DRUPAL8_VERSION__:%version:' \
 
 
 %install
-pushd drupal-%{git_commit_short}
+pushd %{source0_dir}
 
 # Main
 mkdir -pm 755 %{buildroot}%{drupal8}
@@ -320,8 +347,8 @@ ln -s %{_sysconfdir}/httpd/conf.d/%{name}.htaccess %{buildroot}%{drupal8}/.htacc
 popd
 
 # RPM "magic"
-mkdir -pm 0755 %{buildroot}%{_sysconfdir}/rpm
-install -pm 0644 macros.%{name} %{buildroot}%{_sysconfdir}/rpm/
+mkdir -pm 0755 %{buildroot}%{macrosdir}
+install -pm 0644 macros.%{name} %{buildroot}%{macrosdir}/
 mkdir -pm 0755 %{buildroot}%{_rpmconfigdir}/fileattrs
 install -pm 0644 %{name}.attr %{buildroot}%{_rpmconfigdir}/fileattrs/
 install -pm 0755 %{name}.prov %{buildroot}%{_rpmconfigdir}/
@@ -334,17 +361,25 @@ install -pm 0644 %{name}.conf %{buildroot}%{_sysconfdir}/httpd/conf.d/
 %check
 # Ensure RewriteBase
 grep 'RewriteBase /drupal8' \
-         %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.htaccess \
-         --quiet \
-     || exit 1
+        %{buildroot}%{_sysconfdir}/httpd/conf.d/%{name}.htaccess \
+        --quiet \
+    || exit 1
+
+pushd %{source0_dir} > /dev/null
+    # Ensure php bin updated
+    grep -r '#!/bin/php' . && exit 1
+
+    # Ensure phpunit bin updated
+    grep 'core/vendor' core/modules/simpletest/simpletest.module && exit 1
+popd > /dev/null
 
 
 %files
 # Core
-%doc drupal-%{git_commit_short}/README.txt
-%doc drupal-%{git_commit_short}/composer.*
-%doc drupal-%{git_commit_short}/core/*.txt
-%doc drupal-%{git_commit_short}/example.*
+%doc %{source0_dir}/README.txt
+%doc %{source0_dir}/composer.*
+%doc %{source0_dir}/core/*.txt
+%doc %{source0_dir}/example.*
 %dir %{drupal8}
      %{drupal8}/.htaccess
      %{drupal8}/*.*
@@ -379,13 +414,17 @@ grep 'RewriteBase /drupal8' \
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.htaccess
 
 %files rpmbuild
-%{_sysconfdir}/rpm/macros.%{name}
+%{macrosdir}/macros.%{name}
 %{_rpmconfigdir}/fileattrs/%{name}.attr
 %{_rpmconfigdir}/%{name}.prov
 %{_rpmconfigdir}/%{name}.req
 
 
 %changelog
+* Fri May 23 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.10.alpha11
+- Updated to 8.0-alpha11
+- Many more changes...
+
 * Sun Jan 12 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
 - Updated to release tag 8.0-alpha7
 - Updated URL
