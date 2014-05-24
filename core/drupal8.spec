@@ -34,8 +34,8 @@ AutoReqProv: no
 %global guzzle_min_ver 4.0
 %global guzzle_max_ver 4.1
 # "symfony/*": "2.4.*" (composer.json)
-%global symfony_min_ver 2.3.0
-%global symfony_max_ver 2.4.0
+%global symfony_min_ver 2.4.0
+%global symfony_max_ver 2.5.0
 # "symfony-cmf/routing": "1.1.*@alpha" (composer.json)
 %global symfony_cmf_routing_min_ver 1.1.0
 %global symfony_cmf_routing_max_ver 1.2.0
