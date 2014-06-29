@@ -4,14 +4,8 @@
 # Disable automatic dependency processing
 AutoReqProv: no
 
-%global git_commit       c39598105fded28f7bfedc78734c1ccde9a9bc9e
-%global git_commit_short %(c=%{git_commit}; echo ${c:0:7})
-%global git_prerelease   alpha11
-
 # "php": ">=5.4.2" (composer.json)
-#%%global php_min_ver 5.4.2
-# DEBUG ONLY!
-%global php_min_ver 5.3
+%global php_min_ver 5.4.2
 
 # "kriswallsmith/assetic": "1.1.*@alpha" (composer.json)
 %global assetic_min_ver 1.1.0
@@ -46,20 +40,21 @@ AutoReqProv: no
 %global zendframework_min_ver 2.2.0
 %global zendframework_max_ver 2.3.0
 
+%global pre_release alpha12
 %global drupal8     %{_datadir}/drupal8
 %global macrosdir   %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
-%global source0_dir drupal-%{version}%{?git_prerelease:-%{git_prerelease}}
+%global source0_dir drupal-%{version}%{?pre_release:-%{pre_release}}
 
 
 Name:      drupal8
 Version:   8.0
-Release:   0.10%{?git_prerelease:.%{git_prerelease}}%{?dist}
+Release:   0.11%{?pre_release:.%{pre_release}}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
 License:   GPLv2+
 URL:       https://drupal.org/drupal-8.0
-Source0:   http://ftp.drupal.org/files/projects/drupal-%{version}%{?git_prerelease:-%{git_prerelease}}.tar.gz
+Source0:   http://ftp.drupal.org/files/projects/drupal-%{version}%{?pre_release:-%{pre_release}}.tar.gz
 # RPM "magic"
 Source1:   macros.%{name}
 Source2:   %{name}.attr
@@ -112,7 +107,7 @@ Requires:  php-SymfonyCmfRouting                >= %{symfony_cmf_routing_min_ver
 Requires:  php-SymfonyCmfRouting                <  %{symfony_cmf_routing_max_ver}
 Requires:  php-ZendFramework2-Feed              >= %{zendframework_min_ver}
 Requires:  php-ZendFramework2-Feed              <  %{zendframework_max_ver}
-# phpcompatinfo (computed from version 8.0-alpha11)
+# phpcompatinfo (computed from version 8.0-alpha12)
 Requires:  php-bz2
 Requires:  php-ctype
 Requires:  php-curl
@@ -137,7 +132,6 @@ Requires:  php-simplexml
 Requires:  php-spl
 Requires:  php-tokenizer
 Requires:  php-xml
-Requires:  php-zip
 Requires:  php-zlib
 # Specific files to make sure broken dependency if providing pkg moves file
 Requires:  %{_datadir}/php/Assetic/functions.php
@@ -272,6 +266,7 @@ sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$l
     -i core/vendor/composer/autoload_real.php
 
 # Fix Composer autoload files
+# TODO: Update Guzzle when guzzlehttp/guzzle in unbundled
 sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
     -i core/vendor/composer/autoload_files.php
 
@@ -295,9 +290,9 @@ chmod -x \
     core/misc/icons/73b355/check.svg \
     core/misc/icons/e29700/warning.svg \
     core/misc/icons/ea2800/error.svg \
-    core/modules/ban/lib/Drupal/ban/BanIpManagerInterface.php \
-    core/modules/simpletest/lib/Drupal/simpletest/Tests/SimpleTestTest.php \
-    core/modules/system/lib/Drupal/system/Tests/Database/DeleteTruncateTest.php
+    core/modules/ban/src/BanIpManagerInterface.php \
+    core/modules/simpletest/src/Tests/SimpleTestTest.php \
+    core/modules/system/src/Tests/Database/DeleteTruncateTest.php
 
 popd
 
@@ -324,7 +319,7 @@ sed -e 's:__DRUPAL8_VERSION__:%version:' \
 pushd %{source0_dir}
 
 # Main
-mkdir -pm 755 %{buildroot}%{drupal8}
+mkdir -pm 0755 %{buildroot}%{drupal8}
 cp -pr * %{buildroot}%{drupal8}/
 
 # Sites
@@ -398,7 +393,7 @@ popd > /dev/null
 # Sites
 %dir     %{_sysconfdir}/%{name}
 %dir     %{_sysconfdir}/%{name}/default
-%config  %{_sysconfdir}/%{name}/default/default.settings.php
+         %{_sysconfdir}/%{name}/default/default.settings.php
 %exclude %{_sysconfdir}/%{name}/*.txt
 %exclude %{_sysconfdir}/%{name}/example.*
 # Files
@@ -421,6 +416,9 @@ popd > /dev/null
 
 
 %changelog
+* Sun Jun 29 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.11.alpha12
+- Updated to 8.0-alpha12
+
 * Fri May 23 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.10.alpha11
 - Updated to 8.0-alpha11
 - Many more changes...
