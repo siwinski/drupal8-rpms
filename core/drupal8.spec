@@ -24,9 +24,9 @@ AutoReqProv: no
 # "sdboyer/gliph": "0.1.*" (composer.json)
 %global gliph_min_ver 0.1.0
 %global gliph_max_ver 0.2.0
-# "guzzlehttp/guzzle": "4.0.*" (composer.json)
-%global guzzle_min_ver 4.0
-%global guzzle_max_ver 4.1
+# "guzzlehttp/guzzle": "4.1.*" (composer.json)
+%global guzzle_min_ver 4.1
+%global guzzle_max_ver 4.2
 # "symfony/*": "2.4.*" (composer.json)
 %global symfony_min_ver 2.4.0
 %global symfony_max_ver 2.5.0
@@ -40,7 +40,7 @@ AutoReqProv: no
 %global zendframework_min_ver 2.2.0
 %global zendframework_max_ver 2.3.0
 
-%global pre_release alpha12
+%global pre_release alpha13
 %global drupal8     %{_datadir}/drupal8
 %global macrosdir   %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 %global source0_dir drupal-%{version}%{?pre_release:-%{pre_release}}
@@ -48,7 +48,7 @@ AutoReqProv: no
 
 Name:      drupal8
 Version:   8.0
-Release:   0.11%{?pre_release:.%{pre_release}}%{?dist}
+Release:   0.12%{?pre_release:.%{pre_release}}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -79,7 +79,7 @@ Requires:  php-EasyRdf                          >= %{easyrdf_min_ver}
 Requires:  php-EasyRdf                          <  %{easyrdf_max_ver}
 Requires:  php-gliph                            >= %{gliph_min_ver}
 Requires:  php-gliph                            <  %{gliph_max_ver}
-# TODO (not packaged)
+# https://bugzilla.redhat.com/show_bug.cgi?id=1100927
 #Requires:  php-guzzlehttp-guzzle                >= %%{guzzle_min_ver}
 #Requires:  php-guzzlehttp-guzzle                <  %%{guzzle_max_ver}
 Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
@@ -87,6 +87,8 @@ Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
 Requires:  php-phpunit-PHPUnit
 Requires:  php-symfony-classloader              >= %{symfony_min_ver}
 Requires:  php-symfony-classloader              <  %{symfony_max_ver}
+Requires:  php-symfony-cssselector              >= %{symfony_min_ver}
+Requires:  php-symfony-cssselector              <  %{symfony_max_ver}
 Requires:  php-symfony-dependencyinjection      >= %{symfony_min_ver}
 Requires:  php-symfony-dependencyinjection      <  %{symfony_max_ver}
 Requires:  php-symfony-eventdispatcher          >= %{symfony_min_ver}
@@ -107,7 +109,7 @@ Requires:  php-SymfonyCmfRouting                >= %{symfony_cmf_routing_min_ver
 Requires:  php-SymfonyCmfRouting                <  %{symfony_cmf_routing_max_ver}
 Requires:  php-ZendFramework2-Feed              >= %{zendframework_min_ver}
 Requires:  php-ZendFramework2-Feed              <  %{zendframework_max_ver}
-# phpcompatinfo (computed from version 8.0-alpha12)
+# phpcompatinfo (computed from version 8.0-alpha13)
 Requires:  php-bz2
 Requires:  php-ctype
 Requires:  php-curl
@@ -132,6 +134,7 @@ Requires:  php-simplexml
 Requires:  php-spl
 Requires:  php-tokenizer
 Requires:  php-xml
+Requires:  php-zip
 Requires:  php-zlib
 # Specific files to make sure broken dependency if providing pkg moves file
 Requires:  %{_datadir}/php/Assetic/functions.php
@@ -145,6 +148,7 @@ Provides:  drupal8(aggregator)          = %{version}
 Provides:  drupal8(ban)                 = %{version}
 Provides:  drupal8(basic_auth)          = %{version}
 Provides:  drupal8(block)               = %{version}
+Provides:  drupal8(block_content)       = %{version}
 Provides:  drupal8(book)                = %{version}
 Provides:  drupal8(breakpoint)          = %{version}
 Provides:  drupal8(ckeditor)            = %{version}
@@ -416,14 +420,17 @@ popd > /dev/null
 
 
 %changelog
-* Sun Jun 29 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.11.alpha12
+* Wed Jul 02 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.12.alpha13
+- Updated to 8.0-alpha13
+
+* Sun Jun 29 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.11.alpha12
 - Updated to 8.0-alpha12
 
-* Fri May 23 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.10.alpha11
+* Fri May 23 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.10.alpha11
 - Updated to 8.0-alpha11
 - Many more changes...
 
-* Sun Jan 12 2014 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.9.alpha7
+* Sun Jan 12 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.9.alpha7
 - Updated to release tag 8.0-alpha7
 - Updated URL
 - Moved .htaccess file to Apache conf dir
@@ -435,7 +442,7 @@ popd > /dev/null
 - Keep modules, profiles, and themes README files in directories
 - Unbundling now uses autoloader instead of symlinks
 
-* Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.8.alpha4
+* Wed Oct 23 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.8.alpha4
 - Updated to release tag 8.0-alpha4
 - Require correct min PHP version 5.3.10 instead of 5.3.3
 - Require correct min/max pkg versions
@@ -445,25 +452,25 @@ popd > /dev/null
   Added: openssl, tokenizer
   Removed: bcmath, gmp
 
-* Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.7.20130616git1648a47
+* Sun Jun 16 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.7.20130616git1648a47
 - Updated to 2013-06-16 snapshot
 - No auto-provide hidden projects
 - Static virtual provides instead of dynamic
 
-* Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.6.20130612gite952a21
+* Wed Jun 12 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.6.20130612gite952a21
 - Updated to 2013-06-12 snapshot
 
-* Sun May 05 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.5.20130504git5838ea9
+* Sun May 05 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.5.20130504git5838ea9
 - Updated to 2013-05-04 snapshot
 
-* Thu Apr 04 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.4.20130403giteebd063
+* Thu Apr 04 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.4.20130403giteebd063
 - Updated to 2013-04-03 snapshot
 - Updated note about PHP minimum version
 - Added php-Assetic and php-SymfonyCmfRouting requires
 - Removed vendors (bundled libraries) phpci requires
 - Updated composer file locations
 
-* Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.3.20130309git3210003
+* Thu Mar 21 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.3.20130309git3210003
 - %%{drupal8}/sites => %%{_sysconfdir}/%%{name}
 - Marked Apache config as %%config
 - Marked modules/profiles/themes README.txt as %%doc
@@ -471,11 +478,11 @@ popd > /dev/null
 - Removed example.gitignore
 - Added files dir and symlink
 
-* Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.2.20130309git3210003
+* Sat Mar 09 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.2.20130309git3210003
 - Updated to latest 2013-03-09 snapshot
 - *.info => *.info.yml
 - Added PyYAML require for rpmbuild sub-package
 - Un-bundled PHPUnit
 
-* Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> 8.0-0.1.20130224git8afbc08
+* Mon Feb 25 2013 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.1.20130224git8afbc08
 - Initial package
