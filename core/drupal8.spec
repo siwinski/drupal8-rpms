@@ -1,3 +1,14 @@
+#
+# RPM spec file for drupal8
+#
+# Copyright (c) 2013-2014 Shawn Iwinski <shawn.iwinski@gmail.com>
+#
+# License: MIT
+# http://opensource.org/licenses/MIT
+#
+# Please preserve changelog entries
+#
+
 # See https://github.com/siwinski/drupal8-rpms (see README.md for TODOs)
 # See WARNING notes in %%description
 
@@ -36,19 +47,22 @@ AutoReqProv: no
 # "twig/twig": "1.15.*" (composer.json)
 %global twig_min_ver 1.15.0
 %global twig_max_ver 1.16.0
+# "mikey179/vfsStream": "1.*"
+%global vfsstream_min_ver 1.0
+%global vfsstream_max_ver 2.0
 # "zendframework/zend-feed": "2.2.*" (composer.json)
 %global zendframework_min_ver 2.2.0
 %global zendframework_max_ver 2.3.0
 
-%global pre_release alpha13
+%global pre_release alpha14
 %global drupal8     %{_datadir}/drupal8
 %global macrosdir   %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 %global source0_dir drupal-%{version}%{?pre_release:-%{pre_release}}
 
 
 Name:      drupal8
-Version:   8.0
-Release:   0.12%{?pre_release:.%{pre_release}}%{?dist}
+Version:   8.0.0
+Release:   0.13%{?pre_release:.%{pre_release}}%{?dist}
 Summary:   An open source content management platform
 
 Group:     Applications/Publishing
@@ -71,19 +85,18 @@ Requires:  mod_php
 
 Requires:  php-Assetic                          >= %{assetic_min_ver}
 Requires:  php-Assetic                          <  %{assetic_max_ver}
-Requires:  php-doctrine-annotations             >= %{doctrine_annotations_min_ver}
-Requires:  php-doctrine-annotations             <  %{doctrine_annotations_max_ver}
-Requires:  php-doctrine-common                  >= %{doctrine_common_min_ver}
-Requires:  php-doctrine-common                  <  %{doctrine_common_max_ver}
+Requires:  php-composer(doctrine/annotations)   >= %{doctrine_annotations_min_ver}
+Requires:  php-composer(doctrine/annotations)   <  %{doctrine_annotations_max_ver}
+Requires:  php-composer(doctrine/common)        >= %{doctrine_common_min_ver}
+Requires:  php-composer(doctrine/common)        <  %{doctrine_common_max_ver}
+Requires:  php-composer(guzzlehttp/guzzle)      >= %{guzzle_min_ver}
+Requires:  php-composer(guzzlehttp/guzzle)      <  %{guzzle_max_ver}
+Requires:  php-composer(mikey179/vfsStream)     >= %{vfsstream_min_ver}
+Requires:  php-composer(mikey179/vfsStream)     <  %{vfsstream_max_ver}
 Requires:  php-EasyRdf                          >= %{easyrdf_min_ver}
 Requires:  php-EasyRdf                          <  %{easyrdf_max_ver}
 Requires:  php-gliph                            >= %{gliph_min_ver}
 Requires:  php-gliph                            <  %{gliph_max_ver}
-# https://bugzilla.redhat.com/show_bug.cgi?id=1100927
-#Requires:  php-guzzlehttp-guzzle                >= %%{guzzle_min_ver}
-#Requires:  php-guzzlehttp-guzzle                <  %%{guzzle_max_ver}
-Requires:  php-pear(pear.twig-project.org/Twig) >= %{twig_min_ver}
-Requires:  php-pear(pear.twig-project.org/Twig) <  %{twig_max_ver}
 Requires:  php-phpunit-PHPUnit
 Requires:  php-symfony-classloader              >= %{symfony_min_ver}
 Requires:  php-symfony-classloader              <  %{symfony_max_ver}
@@ -107,6 +120,8 @@ Requires:  php-symfony-yaml                     >= %{symfony_min_ver}
 Requires:  php-symfony-yaml                     <  %{symfony_max_ver}
 Requires:  php-SymfonyCmfRouting                >= %{symfony_cmf_routing_min_ver}
 Requires:  php-SymfonyCmfRouting                <  %{symfony_cmf_routing_max_ver}
+Requires:  php-twig-Twig                        >= %{twig_min_ver}
+Requires:  php-twig-Twig                        <  %{twig_max_ver}
 Requires:  php-ZendFramework2-Feed              >= %{zendframework_min_ver}
 Requires:  php-ZendFramework2-Feed              <  %{zendframework_max_ver}
 # phpcompatinfo (computed from version 8.0-alpha13)
@@ -270,12 +285,13 @@ sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$l
     -i core/vendor/composer/autoload_real.php
 
 # Fix Composer autoload files
-# TODO: Update Guzzle when guzzlehttp/guzzle in unbundled
-sed "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
+sed -e "/guzzlehttp\/guzzle\/src\/functions.php/s#.*#    '%{_datadir}/php/GuzzleHttp/functions.php',#" \
+    -e "/guzzlehttp\/streams\/src\/functions.php/s#.*#    '%{_datadir}/php/GuzzleHttp/Stream/functions.php',#" \
+    -e "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
     -i core/vendor/composer/autoload_files.php
 
 # Remove bundled Composer libraries
-for BUNDLED_LIBRARY in doctrine easyrdf kriswallsmith phpunit psr sdboyer symfony symfony-cmf twig zendframework
+for BUNDLED_LIBRARY in doctrine easyrdf guzzlehttp kriswallsmith phpunit psr sdboyer sebastian symfony symfony-cmf twig zendframework
 do
     # Bundled library itself
     rm -rf "core/vendor/${BUNDLED_LIBRARY}"
@@ -284,18 +300,21 @@ do
     sed "/\$vendorDir\s*.\s*'\/${BUNDLED_LIBRARY}\//d" \
         -i core/vendor/composer/autoload_classmap.php \
         -i core/vendor/composer/autoload_namespaces.php \
+        -i core/vendor/composer/autoload_psr4.php \
         -i core/vendor/composer/include_paths.php
 done
 rm -f core/vendor/bin/phpunit
 
+# Symfony DependencyInjection pkg does not include test files so skip this test
+rm -f core/tests/Drupal/Tests/Core/DependencyInjection/ContainerBuilderTest.php
+
 # Fix script-without-shebang
 chmod -x \
-    LICENSE.txt \
+    core/lib/Drupal/Core/Display/VariantManager.php \
     core/misc/icons/73b355/check.svg \
     core/misc/icons/e29700/warning.svg \
     core/misc/icons/ea2800/error.svg \
     core/modules/ban/src/BanIpManagerInterface.php \
-    core/modules/simpletest/src/Tests/SimpleTestTest.php \
     core/modules/system/src/Tests/Database/DeleteTruncateTest.php
 
 popd
@@ -310,8 +329,9 @@ cp -p %{SOURCE4} .
 cp -p %{SOURCE5} .
 
 # Update macros' version and base path
-sed -e 's:__DRUPAL8_VERSION__:%version:' \
-    -e 's:__DRUPAL8__:%drupal8:' \
+sed -e 's:__DRUPAL8_PHP_MIN_VER__:%{php_min_ver}:' \
+    -e 's:__DRUPAL8_VERSION__:%{version}:' \
+    -e 's:__DRUPAL8__:%{drupal8}:' \
     -i macros.%{name}
 
 
@@ -364,13 +384,18 @@ grep 'RewriteBase /drupal8' \
         --quiet \
     || exit 1
 
-pushd %{source0_dir} > /dev/null
+pushd %{source0_dir}
     # Ensure php bin updated
     grep -r '#!/bin/php' . && exit 1
 
     # Ensure phpunit bin updated
     grep 'core/vendor' core/modules/simpletest/simpletest.module && exit 1
-popd > /dev/null
+
+    # Unit tests
+    pushd core
+        phpunit
+    popd
+popd
 
 
 %files
@@ -420,6 +445,9 @@ popd > /dev/null
 
 
 %changelog
+* Sun Aug 31 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.12.alpha14
+- Updated to 8.0-alpha14
+
 * Wed Jul 02 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.12.alpha13
 - Updated to 8.0-alpha13
 
