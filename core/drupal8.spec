@@ -12,52 +12,60 @@
 # See https://github.com/siwinski/drupal8-rpms (see README.md for TODOs)
 # See WARNING notes in %%description
 
-# Disable automatic dependency processing
+# Disable automatic requires/provides processing
 AutoReqProv: no
 
-# "php": ">=5.4.2" (composer.json)
-%global php_min_ver 5.4.2
+# "php": ">=5.4.5"
+%global php_min_ver 5.4.5
 
-# "kriswallsmith/assetic": "1.1.*@alpha" (composer.json)
-%global assetic_min_ver 1.1.0
-%global assetic_max_ver 1.2.0
-# "doctrine/annotations": "dev-master#463d926a8dcc49271cb7db5a08364a70ed6e3cd3" (composer.json)
-# TODO: php-doctrine-annotations needs to be updated to include this commit
-%global doctrine_annotations_min_ver 1.1.2
-%global doctrine_annotations_max_ver 2.0
-# "doctrine/common": "dev-bmaster#a45d110f71c323e29f41eb0696fa230e3fa1b1b5" (composer.json)
+# "doctrine/annotations": "1.2.*"
+%global doctrine_annotations_min_ver 1.2.0
+%global doctrine_annotations_max_ver 2.0.0
+# "doctrine/common": "dev-bmaster#a45d110f71c323e29f41eb0696fa230e3fa1b1b5"
 # TODO: php-doctrine-common needs to be updated to include this commit
 %global doctrine_common_min_ver 2.4.0
 %global doctrine_common_max_ver 2.5.0
-# "easyrdf/easyrdf": "0.8.*" (composer.json)
+# "easyrdf/easyrdf": "0.8.*"
 %global easyrdf_min_ver 0.8.0
 %global easyrdf_max_ver 0.9.0
-# "sdboyer/gliph": "0.1.*" (composer.json)
+# "egulias/email-validator": "1.2.*"
+%global email_validator_min_ver 1.2.0
+%global email_validator_max_ver 1.3.0
+# "sdboyer/gliph": "0.1.*"
 %global gliph_min_ver 0.1.0
 %global gliph_max_ver 0.2.0
-# "guzzlehttp/guzzle": "4.1.*" (composer.json)
-%global guzzle_min_ver 4.1
-%global guzzle_max_ver 4.2
-# "symfony/*": "2.4.*" (composer.json)
-%global symfony_min_ver 2.4.0
-%global symfony_max_ver 2.5.0
-# "symfony-cmf/routing": "1.1.*@alpha" (composer.json)
-%global symfony_cmf_routing_min_ver 1.1.0
-%global symfony_cmf_routing_max_ver 1.2.0
-# "twig/twig": "1.15.*" (composer.json)
-%global twig_min_ver 1.15.0
-%global twig_max_ver 1.16.0
+# "guzzlehttp/guzzle": "~5.0"
+%global guzzle_min_ver 5.0
+%global guzzle_max_ver 6.0
+# "stack/builder": "1.0.*"
+%global stack_builder_min_ver 1.0.0
+%global stack_builder_max_ver 1.1.0
+# "symfony/*": "2.5.*"
+%global symfony_min_ver 2.5.0
+%global symfony_max_ver 2.6.0
+# "symfony-cmf/routing": "1.3.*"
+%global symfony_cmf_routing_min_ver 1.3.0
+%global symfony_cmf_routing_max_ver 1.4.0
+# "twig/twig": "1.16.*"
+%global twig_min_ver 1.16.0
+%global twig_max_ver 1.17.0
 # "mikey179/vfsStream": "1.*"
 %global vfsstream_min_ver 1.0
 %global vfsstream_max_ver 2.0
-# "zendframework/zend-feed": "2.2.*" (composer.json)
-%global zendframework_min_ver 2.2.0
-%global zendframework_max_ver 2.3.0
+# "zendframework/zend-feed": "2.2.*"
+%global zf_min_ver 2.2.0
+# DEBUG!!!
+%global zf_max_ver 2.4.0
 
-%global pre_release alpha14
+%global pre_release beta3
 %global drupal8     %{_datadir}/drupal8
 %global macrosdir   %(d=%{_rpmconfigdir}/macros.d; [ -d $d ] || d=%{_sysconfdir}/rpm; echo $d)
 %global source0_dir drupal-%{version}%{?pre_release:-%{pre_release}}
+
+# Build using "--with tests" to enable tests
+%global with_tests 0%{?_with_tests:1}
+
+%{!?__phpunit:  %global __phpunit  %{_bindir}/phpunit}
 
 
 Name:      drupal8
@@ -79,51 +87,54 @@ Source5:   %{name}.conf
 
 BuildArch: noarch
 
-Requires:  php(language) >= %{php_min_ver}
 Requires:  httpd
 Requires:  mod_php
 
-Requires:  php-Assetic                          >= %{assetic_min_ver}
-Requires:  php-Assetic                          <  %{assetic_max_ver}
-Requires:  php-composer(doctrine/annotations)   >= %{doctrine_annotations_min_ver}
-Requires:  php-composer(doctrine/annotations)   <  %{doctrine_annotations_max_ver}
-Requires:  php-composer(doctrine/common)        >= %{doctrine_common_min_ver}
-Requires:  php-composer(doctrine/common)        <  %{doctrine_common_max_ver}
-Requires:  php-composer(guzzlehttp/guzzle)      >= %{guzzle_min_ver}
-Requires:  php-composer(guzzlehttp/guzzle)      <  %{guzzle_max_ver}
-Requires:  php-composer(mikey179/vfsStream)     >= %{vfsstream_min_ver}
-Requires:  php-composer(mikey179/vfsStream)     <  %{vfsstream_max_ver}
-Requires:  php-EasyRdf                          >= %{easyrdf_min_ver}
-Requires:  php-EasyRdf                          <  %{easyrdf_max_ver}
-Requires:  php-gliph                            >= %{gliph_min_ver}
-Requires:  php-gliph                            <  %{gliph_max_ver}
+# composer.json
+Requires:  php(language) >= %{php_min_ver}
 Requires:  php-phpunit-PHPUnit
-Requires:  php-symfony-classloader              >= %{symfony_min_ver}
-Requires:  php-symfony-classloader              <  %{symfony_max_ver}
-Requires:  php-symfony-cssselector              >= %{symfony_min_ver}
-Requires:  php-symfony-cssselector              <  %{symfony_max_ver}
-Requires:  php-symfony-dependencyinjection      >= %{symfony_min_ver}
-Requires:  php-symfony-dependencyinjection      <  %{symfony_max_ver}
-Requires:  php-symfony-eventdispatcher          >= %{symfony_min_ver}
-Requires:  php-symfony-eventdispatcher          <  %{symfony_max_ver}
-Requires:  php-symfony-httpfoundation           >= %{symfony_min_ver}
-Requires:  php-symfony-httpfoundation           <  %{symfony_max_ver}
-Requires:  php-symfony-httpkernel               >= %{symfony_min_ver}
-Requires:  php-symfony-httpkernel               <  %{symfony_max_ver}
-Requires:  php-symfony-routing                  >= %{symfony_min_ver}
-Requires:  php-symfony-routing                  <  %{symfony_max_ver}
-Requires:  php-symfony-serializer               >= %{symfony_min_ver}
-Requires:  php-symfony-serializer               <  %{symfony_max_ver}
-Requires:  php-symfony-validator                >= %{symfony_min_ver}
-Requires:  php-symfony-validator                <  %{symfony_max_ver}
-Requires:  php-symfony-yaml                     >= %{symfony_min_ver}
-Requires:  php-symfony-yaml                     <  %{symfony_max_ver}
-Requires:  php-SymfonyCmfRouting                >= %{symfony_cmf_routing_min_ver}
-Requires:  php-SymfonyCmfRouting                <  %{symfony_cmf_routing_max_ver}
-Requires:  php-twig-Twig                        >= %{twig_min_ver}
-Requires:  php-twig-Twig                        <  %{twig_max_ver}
-Requires:  php-ZendFramework2-Feed              >= %{zendframework_min_ver}
-Requires:  php-ZendFramework2-Feed              <  %{zendframework_max_ver}
+Requires:  php-composer(doctrine/annotations)         >= %{doctrine_annotations_min_ver}
+Requires:  php-composer(doctrine/annotations)         <  %{doctrine_annotations_max_ver}
+Requires:  php-composer(doctrine/common)              >= %{doctrine_common_min_ver}
+Requires:  php-composer(doctrine/common)              <  %{doctrine_common_max_ver}
+Requires:  php-composer(easyrdf/easyrdf)              >= %{easyrdf_min_ver}
+Requires:  php-composer(easyrdf/easyrdf)              <  %{easyrdf_max_ver}
+Requires:  php-composer(egulias/email-validator)      >= %{email_validator_min_ver}
+Requires:  php-composer(egulias/email-validator)      <  %{email_validator_max_ver}
+Requires:  php-composer(guzzlehttp/guzzle)            >= %{guzzle_min_ver}
+Requires:  php-composer(guzzlehttp/guzzle)            <  %{guzzle_max_ver}
+Requires:  php-composer(mikey179/vfsStream)           >= %{vfsstream_min_ver}
+Requires:  php-composer(mikey179/vfsStream)           <  %{vfsstream_max_ver}
+Requires:  php-composer(sdboyer/gliph)                >= %{gliph_min_ver}
+Requires:  php-composer(sdboyer/gliph)                <  %{gliph_max_ver}
+Requires:  php-composer(stack/builder)                >= %{stack_builder_min_ver}
+Requires:  php-composer(stack/builder)                <  %{stack_builder_max_ver}
+Requires:  php-composer(symfony/class-loader)         >= %{symfony_min_ver}
+Requires:  php-composer(symfony/class-loader)         <  %{symfony_max_ver}
+Requires:  php-composer(symfony/css-selector)         >= %{symfony_min_ver}
+Requires:  php-composer(symfony/css-selector)         <  %{symfony_max_ver}
+Requires:  php-composer(symfony/dependency-injection) >= %{symfony_min_ver}
+Requires:  php-composer(symfony/dependency-injection) <  %{symfony_max_ver}
+Requires:  php-composer(symfony/event-dispatcher)     >= %{symfony_min_ver}
+Requires:  php-composer(symfony/event-dispatcher)     <  %{symfony_max_ver}
+Requires:  php-composer(symfony/http-foundation)      >= %{symfony_min_ver}
+Requires:  php-composer(symfony/http-foundation)      <  %{symfony_max_ver}
+Requires:  php-composer(symfony/http-kernel)          >= %{symfony_min_ver}
+Requires:  php-composer(symfony/http-kernel)          <  %{symfony_max_ver}
+Requires:  php-composer(symfony/routing)              >= %{symfony_min_ver}
+Requires:  php-composer(symfony/routing)              <  %{symfony_max_ver}
+Requires:  php-composer(symfony/serializer)           >= %{symfony_min_ver}
+Requires:  php-composer(symfony/serializer)           <  %{symfony_max_ver}
+Requires:  php-composer(symfony/validator)            >= %{symfony_min_ver}
+Requires:  php-composer(symfony/validator)            <  %{symfony_max_ver}
+Requires:  php-composer(symfony/yaml)                 >= %{symfony_min_ver}
+Requires:  php-composer(symfony/yaml)                 <  %{symfony_max_ver}
+Requires:  php-composer(symfony-cmf/routing)          >= %{symfony_cmf_routing_min_ver}
+Requires:  php-composer(symfony-cmf/routing)          <  %{symfony_cmf_routing_max_ver}
+Requires:  php-composer(twig/twig)                    >= %{twig_min_ver}
+Requires:  php-composer(twig/twig)                    <  %{twig_max_ver}
+Requires:  php-composer(zendframework/zend-feed)      >= %{zf_min_ver}
+Requires:  php-composer(zendframework/zend-feed)      <  %{zf_max_ver}
 # phpcompatinfo (computed from version 8.0-alpha13)
 Requires:  php-bz2
 Requires:  php-ctype
@@ -151,8 +162,6 @@ Requires:  php-tokenizer
 Requires:  php-xml
 Requires:  php-zip
 Requires:  php-zlib
-# Specific files to make sure broken dependency if providing pkg moves file
-Requires:  %{_datadir}/php/Assetic/functions.php
 
 # Virtual provides
 ## Core
@@ -228,16 +237,13 @@ Provides:  drupal8(stark)               = %{version}
 ## Profiles
 Provides:  drupal8(minimal)             = %{version}
 Provides:  drupal8(standard)            = %{version}
+## Composer
+Provides:  php-composer(drupal/drupal)  = %{version}
 
 %description
 Drupal is an open source content management platform powering millions of
 websites and applications. It’s built, used, and supported by an active and
 diverse community of people around the world.
-
-WARNING: This package uses bundled software because the required packages or
-         versions are not available in Fedora/EPEL.  When the required packages
-         and/or versions are available in Fedora/EPEL this package will be
-         updated to use those.
 
 WARNING: This is just a development RPM.  Please submit issues at
          https://github.com/siwinski/drupal8-rpms/issues and prefix
@@ -285,13 +291,11 @@ sed 's#\$loader->register(true);#\$loader->setUseIncludePath(true);\n        \$l
     -i core/vendor/composer/autoload_real.php
 
 # Fix Composer autoload files
-sed -e "/guzzlehttp\/guzzle\/src\/functions.php/s#.*#    '%{_datadir}/php/GuzzleHttp/functions.php',#" \
-    -e "/guzzlehttp\/streams\/src\/functions.php/s#.*#    '%{_datadir}/php/GuzzleHttp/Stream/functions.php',#" \
-    -e "/kriswallsmith\/assetic\/src\/functions.php/s#.*#    '%{_datadir}/php/Assetic/functions.php',#" \
+sed "/react\/promise\/src\/functions.php/s#.*#    '%{_datadir}/php/React/Promise/functions.php',#" \
     -i core/vendor/composer/autoload_files.php
 
 # Remove bundled Composer libraries
-for BUNDLED_LIBRARY in doctrine easyrdf guzzlehttp kriswallsmith phpunit psr sdboyer sebastian symfony symfony-cmf twig zendframework
+for BUNDLED_LIBRARY in doctrine easyrdf egulias guzzlehttp mikey179 phpunit psr react sdboyer sebastian stack symfony symfony-cmf twig zendframework
 do
     # Bundled library itself
     rm -rf "core/vendor/${BUNDLED_LIBRARY}"
@@ -300,21 +304,18 @@ do
     sed "/\$vendorDir\s*.\s*'\/${BUNDLED_LIBRARY}\//d" \
         -i core/vendor/composer/autoload_classmap.php \
         -i core/vendor/composer/autoload_namespaces.php \
-        -i core/vendor/composer/autoload_psr4.php \
         -i core/vendor/composer/include_paths.php
 done
 rm -f core/vendor/bin/phpunit
 
-# Symfony DependencyInjection pkg does not include test files so skip this test
-rm -f core/tests/Drupal/Tests/Core/DependencyInjection/ContainerBuilderTest.php
-
 # Fix script-without-shebang
 chmod -x \
-    core/lib/Drupal/Core/Display/VariantManager.php \
+    LICENSE.txt \
     core/misc/icons/73b355/check.svg \
     core/misc/icons/e29700/warning.svg \
     core/misc/icons/ea2800/error.svg \
     core/modules/ban/src/BanIpManagerInterface.php \
+    core/modules/simpletest/src/Tests/SimpleTestTest.php \
     core/modules/system/src/Tests/Database/DeleteTruncateTest.php
 
 popd
@@ -329,9 +330,8 @@ cp -p %{SOURCE4} .
 cp -p %{SOURCE5} .
 
 # Update macros' version and base path
-sed -e 's:__DRUPAL8_PHP_MIN_VER__:%{php_min_ver}:' \
-    -e 's:__DRUPAL8_VERSION__:%{version}:' \
-    -e 's:__DRUPAL8__:%{drupal8}:' \
+sed -e 's:__DRUPAL8_VERSION__:%version:' \
+    -e 's:__DRUPAL8__:%drupal8:' \
     -i macros.%{name}
 
 
@@ -385,16 +385,52 @@ grep 'RewriteBase /drupal8' \
     || exit 1
 
 pushd %{source0_dir}
-    # Ensure php bin updated
-    grep -r '#!/bin/php' . && exit 1
 
-    # Ensure phpunit bin updated
-    grep 'core/vendor' core/modules/simpletest/simpletest.module && exit 1
+# Ensure php bin updated
+grep -r '#!/bin/php' . && exit 1
 
-    # Unit tests
-    pushd core
-        phpunit
-    popd
+# Ensure phpunit bin updated
+grep 'core/vendor' core/modules/simpletest/simpletest.module && exit 1
+
+# TODO: Ensure all bundled libraries removed
+
+%if %{with_tests}
+# Unit tests
+pushd core
+
+# Skip certain tests that require the "willReturn" function in PHPUnit MockObject > 2
+#   Note: This is because of PHPUnit < 4.1
+%if 0%{?fedora} < 21 && 0%{?rhel} < 7
+sed 's/function testSetError/function SKIP_testSetError/' \
+    -i tests/Drupal/Tests/Core/Form/FormStateTest.php
+sed -e 's/function testRedirectWithResult/function SKIP_testRedirectWithResult/' \
+    -e 's/function testRedirectWithRouteWithResult/function SKIP_testRedirectWithRouteWithResult/' \
+    -e 's/function testRedirectWithResponseObject/function SKIP_testRedirectWithResponseObject/' \
+    -e 's/function testRedirectWithoutResult/function SKIP_testRedirectWithoutResult/' \
+    -i tests/Drupal/Tests/Core/Form/FormSubmitterTest.php
+%endif
+
+# Skip tests with PHPUnit 4.2+ deprecated functions
+#   Note: This is because of PHPUnit > 4.1
+#   See:  https://www.drupal.org/node/2331685
+%if 0%{?fedora} >= 21 && 0%{?rhel} >= 7
+# assertTag
+rm -f tests/Drupal/Tests/Core/Utility/LinkGeneratorTest.php
+# assertSelectEquals
+sed 's/function testPrint/function SKIP_testPrint/' \
+    -i tests/Drupal/Tests/Core/Template/AttributeTest.php
+%endif
+
+# Symfony DependencyInjection pkg does not include test files so skip this test
+rm -f tests/Drupal/Tests/Core/DependencyInjection/ContainerBuilderTest.php
+
+%{__phpunit}
+
+popd
+%else
+: Test suite skipped
+%endif
+
 popd
 
 
@@ -415,16 +451,11 @@ popd
      %{drupal8}/sites
 %dir %{drupal8}/themes
      %{drupal8}/themes/README.txt
-%exclude %{drupal8}/README.txt
-%exclude %{drupal8}/composer.*
-%exclude %{drupal8}/core/*.txt
-%exclude %{drupal8}/example.*
 # Sites
-%dir     %{_sysconfdir}/%{name}
-%dir     %{_sysconfdir}/%{name}/default
-         %{_sysconfdir}/%{name}/default/default.settings.php
-%exclude %{_sysconfdir}/%{name}/*.txt
-%exclude %{_sysconfdir}/%{name}/example.*
+%dir %{_sysconfdir}/%{name}
+     %{_sysconfdir}/%{name}/*.*
+%dir %{_sysconfdir}/%{name}/default
+     %{_sysconfdir}/%{name}/default/*.*
 # Files
 %{_sysconfdir}/%{name}/default/files
 %dir                         %{_localstatedir}/lib/%{name}
@@ -445,8 +476,8 @@ popd
 
 
 %changelog
-* Sun Aug 31 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.12.alpha14
-- Updated to 8.0-alpha14
+* Sat Nov 22 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0.0-0.13.beta3
+- Updated to 8.0.0-beta3
 
 * Wed Jul 02 2014 Shawn Iwinski <shawn.iwinski@gmail.com> - 8.0-0.12.alpha13
 - Updated to 8.0-alpha13
