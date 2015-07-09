@@ -5,42 +5,32 @@ Fedora Drupal 8 Dev RPMs
 
 Core TODO
 ---------
-* Dependencies requiring update:
+* Dependencies requiring update? (need to check):
   * [php-doctrine-annotations](https://admin.fedoraproject.org/pkgdb/package/php-doctrine-annotations/)
   * [php-doctrine-common](https://admin.fedoraproject.org/pkgdb/package/php-doctrine-common/)
 * Unbundle libraries
-  * Composer
-    * Guzzle 4 (core/vendor/guzzlehttp)
   * Modules
     * [CKEditor](https://admin.fedoraproject.org/pkgdb/package/ckeditor/) (core/modules/ckeditor)
-  * JavaScript/CSS (core/core.libraries.yml; core/assets/vendor/*)
-    * backbone
-    * classList
-    * farbtastic
-    * jquery
-    * jquery-form
-    * jquery-once
-    * jquery-ui-touch-punch
-    * normalize-css
-    * underscore
+  * JavaScript/CSS ([core/core.libraries.yml](http://cgit.drupalcode.org/drupal/tree/core/core.libraries.yml?h=8.0.x); [core/assets/vendor/*](http://cgit.drupalcode.org/drupal/tree/core/assets/vendor?h=8.0.x))
+    * [backbone](https://github.com/jashkenas/backbone)
     * [ckeditor](https://admin.fedoraproject.org/pkgdb/package/ckeditor/)
-    * domready
-    * html5shiv
-    * jquery.cookie
-    * jquery-joyride
-    * jquery.ui
-    * modernizr
-    * picturefill
+    * [classList](https://github.com/eligrey/classList.js)
+    * [domready](https://github.com/ded/domready)
+    * [html5shiv](https://github.com/aFarkas/html5shiv)
+    * [jquery.form](https://github.com/malsup/form)
+    * [jquery.once](https://github.com/RobLoach/jquery-once)
+    * [jquery.cookie](https://github.com/carhartl/jquery-cookie)
+    * [jquery.farbtastic](https://github.com/mattfarina/farbtastic)
+    * [jquery.joyride](https://github.com/zurb/joyride)
+    * [matchmedia](https://github.com/paulirish/matchMedia.js)
+    * [modernizr](https://github.com/Modernizr/Modernizr)
+    * [normalize](https://github.com/necolas/normalize.css)
+    * [picturefill](https://github.com/scottjehl/picturefill)
+    * [underscore](https://github.com/jashkenas/underscore)
 
-Fedora Drafts
+Fedora
 -------------
-* [Packaging Guidelines](https://fedoraproject.org/wiki/User:Siwinski/Draft:Packaging:Drupal8)
-* [Feature](http://fedoraproject.org/wiki/User:Siwinski/Draft:Features:Drupal8)
-
-Fedora Dev Repos
-----------------
-* [Fedora Copr](http://copr.fedoraproject.org/coprs/siwinski/drupal8/)
-  * [Fedora 19](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-19-i386/)
-  * [Fedora 20](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-20-i386/)
-  * [Fedora rawhide](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/fedora-rawhide-i386/)
-  * [EPEL 7](http://copr.fedoraproject.org/coprs/siwinski/drupal8/repo/epel-7-x86_64/)
+* Drafts
+    * [Packaging Guidelines](https://fedoraproject.org/wiki/User:Siwinski/Draft:Packaging:Drupal8)
+    * [Feature](http://fedoraproject.org/wiki/User:Siwinski/Draft:Features:Drupal8)
+* [COPR](http://copr.fedoraproject.org/coprs/siwinski/drupal8/)
