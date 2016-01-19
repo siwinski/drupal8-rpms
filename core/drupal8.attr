@@ -1,3 +1,0 @@
-%__drupal8_provides  %{_rpmconfigdir}/drupal8.prov %{version}
-%__drupal8_requires  %{_rpmconfigdir}/drupal8.req
-%__drupal8_path      ^%{_datadir}/drupal8/(modules|profiles|themes)/
